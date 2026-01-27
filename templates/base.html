@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Arun Maira — Thoughtful Inquiry on Systems, Governance & Care{% endblock %}</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ... other head elements ... -->
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- YOUR CUSTOM CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+    <style>
+        /* Simple, clean CSS for a reading room feel */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f7f3;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 90vh;
+            background: white;
+            border: 1px solid #eae7e0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #f5f2eb;
+            padding: 40px 20px;
+            border-right: 1px solid #eae7e0;
+            display:fixed;
+            height:150vh;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 40px 60px;
+        }
+        
+        .site-title {
+            font-size: 1.4em;
+            font-weight: normal;
+            margin-bottom: 40px;
+            color: #555;
+        }
+        
+        .site-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-bottom: 12px;
+        }
+        
+        .nav-links a {
+            color: #666;
+            text-decoration: none;
+            font-size: 1.05em;
+            transition: color 0.2s;
+            display: block;
+            padding: 5px 0;
+            border-bottom: 1px solid transparent;
+        }
+        
+        .nav-links a:hover {
+            color: #222;
+            border-bottom: 1px solid #d4c9b8;
+        }
+        
+        .nav-links a.active {
+            color: #222;
+            font-weight: bold;
+            border-bottom: 1px solid #b8a992;
+        }
+        
+        .reading-room-link {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eae7e0;
+        }
+        
+        .reading-room-link a {
+            color: #8b7355;
+            font-style: italic;
+            text-decoration: none;
+        }
+        
+        .reading-room-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .page-header {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eae7e0;
+        }
+        
+        .page-header h1 {
+            font-size: 2.2em;
+            font-weight: normal;
+            color: #222;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-style: italic;
+        }
+        
+        .main-content {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        
+        .main-content p {
+            margin-bottom: 1.5em;
+        }
+        
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .book-card {
+            border: 1px solid #eae7e0;
+            padding: 25px;
+            background: #fcfbf8;
+        }
+        
+        .book-title {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        
+        .book-subtitle {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+        
+        .book-description {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .book-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .book-links a {
+            color: #8b7355;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        
+        .book-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .theme-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .theme-card {
+            border: 1px solid #eae7e0;
+            padding: 25px;
+            background: #fcfbf8;
+        }
+        
+        .theme-name {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        
+        .theme-description {
+            color: #555;
+            margin-bottom: 15px;
+        }
+        
+        .theme-link {
+            display: inline-block;
+            color: #8b7355;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        
+        .theme-link:hover {
+            text-decoration: underline;
+        }
+        
+        .contact-form {
+            max-width: 600px;
+            margin-top: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: #8b7355;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .submit-btn:hover {
+            background: #756049;
+        }
+        
+        /* Social Media Icons Styles */
+        .social-icons-minimal {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin: 30px 0 20px 0;
+        }
+        
+        .social-icon {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .social-icon a {
+            color: #8b7355;
+            font-size: 1.4em;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 1px solid transparent;
+        }
+        
+        .social-icon a:hover {
+            color: #756049;
+            border-color: #d4c9b8;
+            background-color: #f9f7f3;
+            transform: translateY(-3px);
+        }
+        
+        .social-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            margin-bottom: 12px;
+            pointer-events: none;
+            z-index: 100;
+            font-family: 'Georgia', serif;
+        }
+        
+        .social-tooltip:after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.85) transparent transparent transparent;
+        }
+        
+        .social-icon:hover .social-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .newsletter-icon {
+            position: relative;
+        }
+        
+        .newsletter-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #8b7355;
+            color: white;
+            font-size: 0.6em;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Sidebar Social Links */
+        .social-sidebar {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eae7e0;
+        }
+        
+        .social-sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .social-sidebar li {
+            margin-bottom: 12px;
+        }
+        
+        .social-sidebar a {
+            color: #8b7355;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95em;
+            padding: 6px 0;
+            transition: color 0.2s;
+        }
+        
+        .social-sidebar a:hover {
+            color: #756049;
+        }
+        
+        .social-sidebar i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+        
+        footer {
+            margin-top: 60px;
+            padding-top: 25px;
+            border-top: 1px solid #eae7e0;
+            color: #888;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        .footer-text {
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #eae7e0;
+                padding: 20px;
+            }
+            
+            .content {
+                padding: 30px;
+            }
+            
+            .book-grid,
+            .theme-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .social-icons-minimal {
+                gap: 20px;
+            }
+            
+            .social-icon a {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .social-icons-minimal {
+                gap: 15px;
+            }
+            
+            .social-icon a {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <h1 class="site-title"><a href="{% url 'home' %}">Arun Maira</a></h1>
+            
+            <ul class="nav-links">
+            <li><a href="{% url 'home' %}" {% if request.path == '/' %}class="active"{% endif %}>Home</a></li>
+            <li><a href="{% url 'about' %}" {% if request.path == '/about/' %}class="active"{% endif %}>About Arun</a></li>
+            <li><a href="{% url 'book_list' %}" {% if request.path == '/books/' %}class="active"{% endif %}>Books</a></li>
+            <li><a href="{% url 'theme_list' %}" {% if request.path == '/themes/' %}class="active"{% endif%}>Themes</a></li>
+            <li><a href="{% url 'media' %}" {% if request.path == '/media/' %}class="active"{% endif %}>Media & Press</a></li>
+            <li><a href="{% url 'connect' %}" {% if request.path == '/connect/' %}class="active"{% endif %}>Connect</a></li>
+            <li><a href="{% url 'contact' %}" {% if request.path == '/contact/' %}class="active"{% endif %}>Contact</a></li>
+            </ul>
+            
+            {% if messages %}
+            <div class="container mt-3">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Sidebar Social Links -->
+            {% if social_media_profiles %}
+            <div class="social-sidebar">
+                <p style="margin-bottom: 15px; color: #666; font-size: 0.9em; font-style: italic;">
+                    Quiet connections
+                </p>
+                <ul>
+                    {% for profile in social_media_profiles %}
+                        {% if profile.show_in_sidebar %}
+                        <li>
+                            <a href="{{ profile.profile_url }}" 
+                               target="_blank" 
+                               rel="noopener noreferrer"
+                               title="{{ profile.get_display_text }}">
+                                <i class="fab fa-{{ profile.get_icon_name }}"></i>
+                                <span>{{ profile.get_display_text }}</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            
+            <div class="reading-room-link">
+                <p style="margin-bottom: 10px; color: #666; font-size: 0.9em;">For deeper exploration:</p>
+
+                <a href="{% url 'reading' %}" {% if request.path == '/reading/' %}class="active"{% endif %}>Enter the Reading Room → </a><br>
+                <a href="{% url 'listening' %}" {% if request.path == '/listening/' %}class="active"{% endif %}>Enter the Listening Room → </a>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="content">
+            {% block content %}
+            <!-- Page-specific content goes here -->
+            {% endblock %}
+        </div>
+    </div>
+    
+    <!-- Footer with Social Icons -->
+    <footer>
+        <p class="footer-text">A quiet space for thoughtful inquiry | © {% now "Y" %} Arun Maira</p>
+        
+        {% if social_media_profiles %}
+        <div class="social-icons-minimal">
+            {% for profile in social_media_profiles %}
+                {% if profile.show_in_footer %}
+                <div class="social-icon {% if profile.platform == 'newsletter' %}newsletter-icon{% endif %}">
+                    <a href="{{ profile.profile_url }}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       aria-label="{{ profile.get_display_text }}">
+                        <i class="fab fa-{{ profile.get_icon_name }}"></i>
+                        {% if profile.platform == 'newsletter' %}
+                        <span class="newsletter-badge">✉</span>
+                        {% endif %}
+                    </a>
+                    <span class="social-tooltip">{{ profile.get_display_text }}</span>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </footer>
+    
+    <script>
+        // Simple contact form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.querySelector('.contact-form form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const submitBtn = this.querySelector('.submit-btn');
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
+                    
+                    fetch('{% url "contact" %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.innerHTML = `<div class="success-message" style="padding: 20px; background: #f9f7f3; border-left: 4px solid #8b7355;"><p style="color: #666; margin: 0;">${data.message}</p></div>`;
+                        }
+                    })
+                    .catch(error => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Send Message';
+                        alert('There was an error sending your message. Please try again.');
+                    });
+                });
+            }
+            
+            // Simple newsletter subscription in sidebar
+            const newsletterForm = document.querySelector('.newsletter-form');
+            if (newsletterForm) {
+                newsletterForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const emailInput = this.querySelector('input[type="email"]');
+                    const submitBtn = this.querySelector('button');
+                    
+                    if (!emailInput.value) return;
+                    
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Adding...';
+                    
+                    const formData = new FormData();
+                    formData.append('email', emailInput.value);
+                    
+                    fetch('{% url "newsletter_subscribe" %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'X-Requested-With': 'XMLHttpRequest',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.innerHTML = `<p style="color: #666; font-size: 0.9em; padding: 10px; background: #f9f7f3; border-left: 3px solid #8b7355;">${data.message}</p>`;
+                    })
+                    .catch(error => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Join quiet list';
+                        alert('Something went wrong. Please try again.');
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

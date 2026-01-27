@@ -1,0 +1,57 @@
+<!-- templates/books.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Books</h1>
+    <p class="page-subtitle">Published works spanning systems thinking, governance, and economic reimagining</p>
+</div>
+
+<div class="main-content">
+    {% if page and page.content %}
+        {{ page.content|safe }}
+    {% else %}
+        <p>Arun Maira's books reflect a lifelong inquiry into how societies and organizations can work more justly, sustainably, and humanely. They combine conceptual clarity with practical insight, drawing on his experience as a planner, corporate leader, and policy advisor.</p>
+    {% endif %}
+    
+    {% if books %}
+    <div class="book-grid" style="margin-top: 40px;">
+        {% for book in books %}
+        <div class="book-card">
+            {% if book.cover_image %}
+            <div style="margin-bottom: 20px;">
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 100%; height: auto; border: 1px solid #eae7e0;">
+            </div>
+            {% endif %}
+            
+            <h3 class="book-title">{{ book.title }}</h3>
+            
+            {% if book.subtitle %}
+            <p class="book-subtitle">{{ book.subtitle }}</p>
+            {% endif %}
+            
+            {% if book.publisher or book.publication_year %}
+            <p style="color: #777; font-size: 0.9em; margin-bottom: 10px;">
+                {% if book.publisher %}{{ book.publisher }}{% endif %}
+                {% if book.publication_year %} ({{ book.publication_year }}){% endif %}
+            </p>
+            {% endif %}
+            
+            <p class="book-description">{{ book.description }}</p>
+            
+            <div class="book-links">
+                {% if book.amazon_link %}
+                <a href="{{ book.amazon_link }}" target="_blank">Purchase on Amazon</a>
+                {% endif %}
+                {% if book.goodreads_link %}
+                <a href="{{ book.goodreads_link }}" target="_blank">View on Goodreads</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="margin-top: 30px; color: #666; font-style: italic;">Book details will be added shortly.</p>
+    {% endif %}
+</div>
+{% endblock %}

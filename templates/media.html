@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Media & Press</h1>
+    <p class="page-subtitle">Resources for journalists, academics, and institutions</p>
+</div>
+
+<div class="main-content">
+    <p style="margin-bottom: 25px; color: #666; font-size: 1.05em; line-height: 1.7;">
+        This section provides resources for journalists, academics, and institutions 
+        seeking background material, biographical information, or high-resolution 
+        images for publication. All materials are provided for one-time editorial use 
+        in connection with coverage of Arun's work.
+    </p>
+    
+    <!-- Downloadable Media Kit -->
+    <div style="margin-bottom: 50px; padding: 30px; background: #f9f7f3; border-radius: 8px;">
+        <h2 style="font-size: 1.4em; margin-bottom: 20px; color: #555;">
+            <i class="fas fa-download" style="margin-right: 10px; color: #8b7355;"></i>
+            Media Kit
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin-top: 25px;">
+            <div style="padding: 25px; border: 1px solid #eae7e0; border-radius: 6px; background: white;">
+                <h3 style="font-size: 1.1em; margin-bottom: 15px; color: #333;">
+                    <i class="fas fa-user" style="margin-right: 8px; color: #8b7355;"></i>
+                    Biography
+                </h3>
+                <p style="color: #666; font-size: 0.95em; margin-bottom: 20px; line-height: 1.6;">
+                    A comprehensive biography covering Arun's career, education, 
+                    and intellectual journey. Available in short (150 words), 
+                    medium (300 words), and long (600 words) versions.
+                </p>
+                <a href="#" style="color: #8b7355; text-decoration: none; font-size: 0.9em; font-weight: 500;">
+                    Download Biography (PDF) →
+                </a>
+            </div>
+            
+            <div style="padding: 25px; border: 1px solid #eae7e0; border-radius: 6px; background: white;">
+                <h3 style="font-size: 1.1em; margin-bottom: 15px; color: #333;">
+                    <i class="fas fa-camera" style="margin-right: 8px; color: #8b7355;"></i>
+                    High-Resolution Photos
+                </h3>
+                <p style="color: #666; font-size: 0.95em; margin-bottom: 20px; line-height: 1.6;">
+                    Professional headshots and author photos in various resolutions 
+                    suitable for print and digital publication. All photos are 
+                    available for editorial use.
+                </p>
+                <a href="#" style="color: #8b7355; text-decoration: none; font-size: 0.9em; font-weight: 500;">
+                    Download Photos (ZIP) →
+                </a>
+            </div>
+            
+            <div style="padding: 25px; border: 1px solid #eae7e0; border-radius: 6px; background: white;">
+                <h3 style="font-size: 1.1em; margin-bottom: 15px; color: #333;">
+                    <i class="fas fa-book" style="margin-right: 8px; color: #8b7355;"></i>
+                    Book Information
+                </h3>
+                <p style="color: #666; font-size: 0.95em; margin-bottom: 20px; line-height: 1.6;">
+                    Detailed information about all published books, including 
+                    cover images, descriptions, publication details, and 
+                    purchasing information.
+                </p>
+                <a href="{% url 'book_list' %}" style="color: #8b7355; text-decoration: none; font-size: 0.9em; font-weight: 500;">
+                    View Book Details →
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Press Coverage -->
+    <div style="margin-bottom: 50px;">
+        <h2 style="font-size: 1.4em; margin-bottom: 25px; color: #555; 
+                   padding-bottom: 15px; border-bottom: 2px solid #eae7e0;">
+            <i class="fas fa-newspaper" style="margin-right: 10px; color: #8b7355;"></i>
+            Selected Press & Interviews
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px;">
+            <div style="border: 1px solid #eae7e0; padding: 25px; border-radius: 8px; background: #fcfbf8;">
+                <h3 style="font-size: 1.1em; margin-bottom: 10px; color: #333;">
+                    The Hindu Business Line
+                </h3>
+                <p style="color: #777; font-size: 0.9em; margin-bottom: 15px; font-style: italic;">
+                    "Rethinking Economic Growth"
+                </p>
+                <p style="color: #555; margin-bottom: 20px; line-height: 1.6; font-size: 0.95em;">
+                    A conversation about moving beyond GDP as the primary measure 
+                    of progress and building economies centered on care and equity.
+                </p>
+                <a href="#" target="_blank" style="color: #8b7355; text-decoration: none; font-size: 0.9em;">
+                    Read Interview →
+                </a>
+            </div>
+            
+            <div style="border: 1px solid #eae7e0; padding: 25px; border-radius: 8px; background: #fcfbf8;">
+                <h3 style="font-size: 1.1em; margin-bottom: 10px; color: #333;">
+                    Mint Lounge
+                </h3>
+                <p style="color: #777; font-size: 0.9em; margin-bottom: 15px; font-style: italic;">
+                    "The Quiet Revolution of Systems Thinking"
+                </p>
+                <p style="color: #555; margin-bottom: 20px; line-height: 1.6; font-size: 0.95em;">
+                    Exploring how systems thinking can help address complex 
+                    challenges in business, policy, and social change.
+                </p>
+                <a href="#" target="_blank" style="color: #8b7355; text-decoration: none; font-size: 0.9em;">
+                    Read Article →
+                </a>
+            </div>
+            
+            <div style="border: 1px solid #eae7e0; padding: 25px; border-radius: 8px; background: #fcfbf8;">
+                <h3 style="font-size: 1.1em; margin-bottom: 10px; color: #333;">
+                    BBC World Service
+                </h3>
+                <p style="color: #777; font-size: 0.9em; margin-bottom: 15px; font-style: italic;">
+                    "The Economics of Care"
+                </p>
+                <p style="color: #555; margin-bottom: 20px; line-height: 1.6; font-size: 0.95em;">
+                    A radio discussion about reimagining economic systems to 
+                    value care work and human wellbeing alongside traditional 
+                    economic indicators.
+                </p>
+                <a href="#" target="_blank" style="color: #8b7355; text-decoration: none; font-size: 0.9em;">
+                    Listen to Interview →
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Speaking & Events -->
+    <div style="margin-bottom: 50px;">
+        <h2 style="font-size: 1.4em; margin-bottom: 25px; color: #555; 
+                   padding-bottom: 15px; border-bottom: 2px solid #eae7e0;">
+            <i class="fas fa-microphone" style="margin-right: 10px; color: #8b7355;"></i>
+            Speaking & Events
+        </h2>
+        
+        <div style="background: #f9f7f3; padding: 30px; border-radius: 8px; border-left: 4px solid #d4c9b8;">
+            <h3 style="font-size: 1.2em; margin-bottom: 15px; color: #555;">
+                Event Information
+            </h3>
+            <p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
+                Arun speaks occasionally at academic institutions, policy forums, 
+                and leadership conferences. His talks typically focus on systems 
+                thinking, governance, economic reimagining, and the future of work 
+                and care.
+            </p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 25px;">
+                <div>
+                    <h4 style="font-size: 1em; margin-bottom: 10px; color: #666;">
+                        <i class="fas fa-check-circle" style="margin-right: 8px; color: #8b7355;"></i>
+                        Typical Formats
+                    </h4>
+                    <ul style="color: #666; font-size: 0.95em; line-height: 1.7; padding-left: 20px;">
+                        <li>Keynote addresses (45-60 minutes)</li>
+                        <li>Panel discussions and moderated dialogues</li>
+                        <li>Academic lectures and seminars</li>
+                        <li>Executive workshops on systems thinking</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 style="font-size: 1em; margin-bottom: 10px; color: #666;">
+                        <i class="fas fa-info-circle" style="margin-right: 8px; color: #8b7355;"></i>
+                        Inquiry Process
+                    </h4>
+                    <ul style="color: #666; font-size: 0.95em; line-height: 1.7; padding-left: 20px;">
+                        <li>Please use the <a href="{% url 'contact' %}" style="color: #8b7355;">contact form</a></li>
+                        <li>Include event details, audience, and format</li>
+                        <li>Allow several weeks for consideration</li>
+                        <li>Arun accepts only a limited number of engagements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- For Academic & Research Inquiries -->
+    <div style="margin-bottom: 40px; padding: 30px; background: #fcfbf8; border: 1px solid #eae7e0; border-radius: 8px;">
+        <h2 style="font-size: 1.3em; margin-bottom: 20px; color: #555;">
+            <i class="fas fa-graduation-cap" style="margin-right: 10px; color: #8b7355;"></i>
+            For Academic & Research Inquiries
+        </h2>
+        
+        <p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
+            Academic researchers and students are welcome to reference Arun's work 
+            in their research. For in-depth research inquiries, interviews, or 
+            requests for unpublished materials, please use the 
+            <a href="{% url 'contact' %}" style="color: #8b7355;">contact form</a> 
+            and include details about your research project, institution, and 
+            intended use of the material.
+        </p>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-top: 25px;">
+            <div style="flex: 1; min-width: 200px; padding: 20px; background: white; border-radius: 6px;">
+                <h4 style="font-size: 1em; margin-bottom: 10px; color: #666;">Citation Style</h4>
+                <p style="color: #777; font-size: 0.9em;">
+                    Please cite published works according to standard academic 
+                    citation formats. Book citations should include publisher 
+                    and year information.
+                </p>
+            </div>
+            
+            <div style="flex: 1; min-width: 200px; padding: 20px; background: white; border-radius: 6px;">
+                <h4 style="font-size: 1em; margin-bottom: 10px; color: #666;">Permissions</h4>
+                <p style="color: #777; font-size: 0.9em;">
+                    For permission to reproduce extended excerpts or full articles, 
+                    please contact the original publishers directly, as copyright 
+                    is typically held by publishers.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact for Press -->
+    <div style="padding: 30px; background: #f9f7f3; border-radius: 8px; border-left: 4px solid #8b7355;">
+        <h3 style="font-size: 1.2em; margin-bottom: 15px; color: #555;">
+            <i class="fas fa-envelope" style="margin-right: 10px;"></i>
+            Contact for Press Inquiries
+        </h3>
+        <p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
+            For urgent press inquiries or interview requests, please use the 
+            <a href="{% url 'contact' %}" style="color: #8b7355;">contact form</a> 
+            and indicate "PRESS INQUIRY" in the subject line. Include your outlet, 
+            deadline, and the focus of your proposed piece.
+        </p>
+        <p style="color: #666; line-height: 1.7; margin-bottom: 0;">
+            <strong>Note:</strong> Arun does not provide comments on breaking news 
+            or current events, but is available for considered conversations about 
+            the themes central to his work.
+        </p>
+    </div>
+</div>
+{% endblock %}

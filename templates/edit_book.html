@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Book - Arun Maira{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0">Edit Book</h1>
+                <a href="{% url 'manage_books' %}" class="btn btn-outline-secondary">
+                    ← Back to Books
+                </a>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                Please correct the errors below.
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <!-- Basic Information -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3 text-brown">Book Information</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.title.id_for_label }}" class="form-label">Title *</label>
+                                        {{ form.title }}
+                                        {% if form.title.errors %}
+                                            <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.subtitle.id_for_label }}" class="form-label">Subtitle</label>
+                                        {{ form.subtitle }}
+                                        {% if form.subtitle.errors %}
+                                            <div class="text-danger small mt-1">{{ form.subtitle.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.description.id_for_label }}" class="form-label">Description *</label>
+                                        {{ form.description }}
+                                        {% if form.description.errors %}
+                                            <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                                        {% endif %}
+                                        <div class="form-text">Provide a detailed description of the book.</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Publication Information -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3 text-brown">Publication Information</h5>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.publisher.id_for_label }}" class="form-label">Publisher</label>
+                                            {{ form.publisher }}
+                                            {% if form.publisher.errors %}
+                                                <div class="text-danger small mt-1">{{ form.publisher.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <div class="col-md-6 mb-3">
+                                            <label for="{{ form.publication_year.id_for_label }}" class="form-label">Publication Year *</label>
+                                            {{ form.publication_year }}
+                                            {% if form.publication_year.errors %}
+                                                <div class="text-danger small mt-1">{{ form.publication_year.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Links -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3 text-brown">Links</h5>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.amazon_link.id_for_label }}" class="form-label">Amazon Link</label>
+                                        {{ form.amazon_link }}
+                                        {% if form.amazon_link.errors %}
+                                            <div class="text-danger small mt-1">{{ form.amazon_link.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.goodreads_link.id_for_label }}" class="form-label">Goodreads Link</label>
+                                        {{ form.goodreads_link }}
+                                        {% if form.goodreads_link.errors %}
+                                            <div class="text-danger small mt-1">{{ form.goodreads_link.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <!-- Cover Image -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3 text-brown">Cover Image</h5>
+                                    
+                                    {% if book.cover_image %}
+                                        <div class="mb-3 text-center">
+                                            <img src="{{ book.cover_image.url }}" 
+                                                 alt="{{ book.title }}" 
+                                                 class="img-fluid rounded mb-2"
+                                                 style="max-height: 200px;">
+                                            <p class="text-muted small">Current cover image</p>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="mb-3">
+                                        <label for="{{ form.cover_image.id_for_label }}" class="form-label">
+                                            {% if book.cover_image %}Change Cover Image{% else %}Upload Cover Image{% endif %}
+                                        </label>
+                                        {{ form.cover_image }}
+                                        {% if form.cover_image.errors %}
+                                            <div class="text-danger small mt-1">{{ form.cover_image.errors }}</div>
+                                        {% endif %}
+                                        <div class="form-text">Recommended size: 400x600 pixels</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Display Options -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3 text-brown">Display Options</h5>
+                                    
+                                    <div class="form-check form-switch mb-3">
+                                        {{ form.is_featured }}
+                                        <label class="form-check-label" for="{{ form.is_featured.id_for_label }}">
+                                            Featured Book
+                                        </label>
+                                        <div class="form-text">Feature this book on the homepage</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-top pt-4 mt-4">
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'delete_book' book.id %}" 
+                                   class="btn btn-outline-danger"
+                                   onclick="return confirm('Are you sure you want to delete this book? This action cannot be undone.');">
+                                    Delete Book
+                                </a>
+                                
+                                <div>
+                                    <a href="{% url 'manage_books' %}" class="btn btn-outline-secondary me-2">
+                                        Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-brown">
+                                        Update Book
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

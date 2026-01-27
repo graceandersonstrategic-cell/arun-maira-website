@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Connect</h1>
+    <p class="page-subtitle">Quiet ways to follow the work</p>
+</div>
+
+<div class="main-content">
+    <p style="margin-bottom: 30px; color: #666; font-size: 1.05em; line-height: 1.7;">
+        Arun maintains a few quiet channels for readers who wish to follow his work. 
+        These are intended as one-way streams of thought—places to encounter ideas, 
+        not platforms for conversation. Each serves a different purpose and reaches 
+        a different audience, but all share the same spirit of thoughtful, 
+        non-intrusive engagement.
+    </p>
+    
+    <!-- Primary Social Platforms -->
+    <div style="margin-bottom: 60px;">
+        <h2 style="font-size: 1.4em; margin-bottom: 30px; color: #555; 
+                   padding-bottom: 15px; border-bottom: 2px solid #eae7e0;">
+            <i class="fas fa-share-alt" style="margin-right: 10px; color: #8b7355;"></i>
+            Primary Channels
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px;">
+            {% for profile in social_media_profiles %}
+                {% if profile.platform in "linkedin,newsletter,twitter" and profile.is_active %}
+                <div class="platform-card" 
+                     style="border: 1px solid #eae7e0; padding: 25px; 
+                            border-radius: 8px; background: #fcfbf8;
+                            transition: all 0.3s ease;
+                            {% if not profile.is_active %}opacity: 0.7;{% endif %}">
+                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; background: #f5f2eb; 
+                                    border-radius: 50%; display: flex; 
+                                    align-items: center; justify-content: center;
+                                    margin-right: 15px;">
+                            <i class="fab fa-{{ profile.get_icon_name }}" 
+                               style="font-size: 1.5em; color: #8b7355;"></i>
+                        </div>
+                        <div>
+                            <h3 style="font-size: 1.2em; margin-bottom: 5px; color: #333;">
+                                {{ profile.get_display_text }}
+                                {% if not profile.is_active %}
+                                <span style="font-size: 0.7em; color: #999; font-style: italic;">
+                                    (inactive)
+                                </span>
+                                {% endif %}
+                            </h3>
+                            {% if profile.platform == 'linkedin' %}
+                            <p style="color: #777; font-size: 0.9em;">Primary platform • Curated posts</p>
+                            {% elif profile.platform == 'twitter' %}
+                            <p style="color: #777; font-size: 0.9em;">Not actively used</p>
+                            {% elif profile.platform == 'newsletter' %}
+                            <p style="color: #777; font-size: 0.9em;">Quiet email circle</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <p style="color: #555; margin-bottom: 20px; line-height: 1.6; font-size: 0.95em;">
+                        {% if profile.platform == 'linkedin' %}
+                        Arun's primary platform, where a young team in India helps share distilled 
+                        reflections from his writings with remarkable results. This is his only 
+                        actively maintained social media presence.
+                        {% elif profile.platform == 'twitter' %}
+                        Connected but not actively used for many years. Maintained as a quiet 
+                        presence only for those who prefer this platform.
+                        {% elif profile.platform == 'newsletter' %}
+                        A quiet email list of about 200+ loyal readers who have followed Arun's 
+                        work for years. New thoughtful readers can express interest in joining 
+                        this occasional, conversation-free sharing of writings.
+                        {% endif %}
+                    </p>
+                    
+                    {% if profile.is_active %}
+                    <a href="{{ profile.profile_url }}" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       style="display: inline-flex; align-items: center; gap: 8px;
+                              color: #8b7355; text-decoration: none; font-weight: 500;
+                              padding: 10px 20px; border: 1px solid #d4c9b8; 
+                              border-radius: 4px; font-size: 0.95em; 
+                              transition: all 0.2s;">
+                        <i class="fas fa-external-link-alt"></i>
+                        Visit {{ profile.get_display_text }}
+                    </a>
+                    {% else %}
+                    <span style="color: #999; font-style: italic; font-size: 0.9em;">
+                        Not actively maintained
+                    </span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Book Platforms -->
+    <div style="margin-bottom: 60px;">
+        <h2 style="font-size: 1.4em; margin-bottom: 30px; color: #555; 
+                   padding-bottom: 15px; border-bottom: 2px solid #eae7e0;">
+            <i class="fas fa-book" style="margin-right: 10px; color: #8b7355;"></i>
+            Book Platforms
+        </h2>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+            {% for profile in social_media_profiles %}
+                {% if profile.platform in "goodreads,amazon" and profile.is_active %}
+                <a href="{{ profile.profile_url }}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   style="flex: 1; min-width: 250px; display: flex; align-items: center;
+                          gap: 20px; padding: 25px; border: 1px solid #eae7e0;
+                          border-radius: 8px; text-decoration: none; color: inherit;
+                          background: #fcfbf8; transition: all 0.2s;">
+                    <div style="width: 60px; height: 60px; background: #f5f2eb; 
+                                border-radius: 50%; display: flex; 
+                                align-items: center; justify-content: center;">
+                        <i class="fab fa-{{ profile.get_icon_name }}" 
+                           style="font-size: 1.8em; color: #8b7355;"></i>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1em; margin-bottom: 5px; color: #333;">
+                            {{ profile.get_display_text }}
+                        </h3>
+                        <p style="color: #777; font-size: 0.9em;">
+                            {% if profile.platform == 'goodreads' %}
+                            Find books, read reviews, track reading
+                            {% elif profile.platform == 'amazon' %}
+                            Purchase physical or digital copies
+                            {% endif %}
+                        </p>
+                    </div>
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Additional Platforms -->
+    {% if social_media_profiles %}
+    <div style="margin-bottom: 60px;">
+        <h2 style="font-size: 1.4em; margin-bottom: 30px; color: #555; 
+                    padding-bottom: 15px; border-bottom: 2px solid #eae7e0;">
+            <i class="fas fa-globe" style="margin-right: 10px; color: #8b7355;"></i>
+            Other Channels
+        </h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+            {% for profile in social_media_profiles %}
+                {% if profile.platform not in "linkedin,newsletter,twitter,goodreads,amazon" and profile.is_active %}
+                <a href="{{ profile.profile_url }}" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style="display: flex; align-items: center; gap: 15px;
+                        padding: 15px; border: 1px solid #eae7e0; border-radius: 6px;
+                        text-decoration: none; color: inherit; background: #fcfbf8;
+                        transition: all 0.2s;">
+                    <i class="fab fa-{{ profile.get_icon_name }}" 
+                        style="font-size: 1.3em; color: #8b7355;"></i>
+                    <span style="font-size: 0.95em; color: #555;">
+                        {{ profile.get_display_text }}
+                    </span>
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Note Box -->
+    <div style="margin-top: 60px; padding: 30px; background: #f9f7f3; 
+                border-left: 4px solid #d4c9b8; border-radius: 4px;">
+        <div style="display: flex; align-items: flex-start; gap: 20px;">
+            <div style="font-size: 1.5em; color: #8b7355;">
+                <i class="fas fa-quote-left"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 1.1em; margin-bottom: 10px; color: #555;">
+                    A Note on Digital Presence
+                </h3>
+                <p style="color: #666; line-height: 1.7; margin-bottom: 15px;">
+                    These channels are maintained as quiet extensions of the reading room. 
+                    They are not monitored for comments or conversation, but exist simply 
+                    as additional pathways for encountering the work. The intention is to 
+                    meet readers where they are, without demanding their attention or 
+                    encouraging noise.
+                </p>
+                <p style="color: #666; line-height: 1.7; margin-bottom: 0;">
+                    For direct inquiries from institutions, editors, or event organizers, 
+                    please use the <a href="{% url 'contact' %}" style="color: #8b7355;">contact form</a>. 
+                    For personal readers, the reading room remains the deepest source of 
+                    Arun's writing and thinking.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Clarification Box (based on Arun's email) -->
+    <div style="margin-top: 40px; padding: 25px; background: #f5f2eb; 
+                border: 1px solid #d4c9b8; border-radius: 6px;">
+        <div style="display: flex; align-items: flex-start; gap: 15px;">
+            <div style="font-size: 1.2em; color: #8b7355;">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div>
+                <h4 style="font-size: 1.1em; margin-bottom: 8px; color: #555;">
+                    Clarification on Arun's Approach
+                </h4>
+                <p style="color: #666; line-height: 1.6; font-size: 0.95em; margin: 0;">
+                    As Arun notes: "I work on my own, apply my own mind, and write my own way. 
+                    Hence my reluctance to do too much, and to focus on the essence—the essentials." 
+                    This selective presence reflects his focus on substance over visibility.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.platform-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    border-color: #d4c9b8;
+}
+
+.platform-card a:hover {
+    background-color: #8b7355;
+    color: white;
+    border-color: #8b7355;
+}
+
+a:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+</style>
+{% endblock %}

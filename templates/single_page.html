@@ -1,0 +1,193 @@
+<!-- templates/single_page.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Arun Maira{% endblock %}
+
+{% block content %}
+<!-- Home Section -->
+<section id="home" class="py-5">
+    <div class="container">
+        <!-- Your existing home.html content goes here -->
+        <!-- templates/home.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>A Quiet Space for Thoughtful Inquiry</h1>
+    <p class="page-subtitle">Systems thinking, governance, equity, and the care economy</p>
+</div>
+
+<div class="main-content">
+    {% if page and page.content %}
+        {{ page.content|safe }}
+    {% else %}
+        <p>Welcome. This space is intended as a gateway to the work of Arun Maira—writer, former planner, and independent thinker focused on systemic change, governance, and the human dimensions of economics.</p>
+        
+        <p>Here you will find an overview of his published books, the principal themes that shape his writing, and a quiet pathway into his deeper body of work. The intention is not to host conversation, but to offer a clear, respectful entry point for those encountering his ideas for the first time.</p>
+        
+        <p>For those already familiar with his writing, the reading and listening rooms remain exactly as they have always been—undisturbed archives of essays, articles, and talks, organized thematically and without commentary.</p>
+    {% endif %}
+    
+    {% if featured_books %}
+    <div style="margin-top: 50px;">
+        <h2 style="font-size: 1.5em; margin-bottom: 20px; color: #555;">Featured Works</h2>
+        <div class="book-grid">
+            {% for book in featured_books %}
+            <div class="book-card">
+                <h3 class="book-title">{{ book.title }}</h3>
+                {% if book.subtitle %}
+                <p class="book-subtitle">{{ book.subtitle }}</p>
+                {% endif %}
+                <p class="book-description">{{ book.description|truncatewords:50 }}</p>
+                <div class="book-links">
+                    {% if book.amazon_link %}
+                    <a href="{{ book.amazon_link }}" target="_blank">Find on Amazon</a>
+                    {% endif %}
+                    {% if book.goodreads_link %}
+                    <a href="{{ book.goodreads_link }}" target="_blank">View on Goodreads</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if themes %}
+    <div style="margin-top: 50px;">
+        <h2 style="font-size: 1.5em; margin-bottom: 20px; color: #555;">Thematic Pathways</h2>
+        <p>Arun's writings are organized around several interconnected themes. These serve as entry points into the reading room.</p>
+        <div class="theme-list">
+            {% for theme in themes %}
+            <div class="theme-card">
+                <h3 class="theme-name">{{ theme.name }}</h3>
+                {% if theme.description %}
+                <p class="theme-description">{{ theme.description|truncatewords:30 }}</p>
+                {% endif %}
+                {% if theme.external_link %}
+                <a href="{{ theme.external_link }}" class="theme-link" target="_blank">Explore {{ theme.name }} in the reading room →</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+        {% include 'sections/home_content.html' %}
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5 bg-light">
+    <div class="container">
+        <!-- Your existing about.html content goes here -->
+        
+        {% include 'sections/about.html' %}
+    </div>
+</section>
+
+<!-- Books Section -->
+<section id="books" class="py-5">
+    <div class="container">
+        <!-- Your existing books.html content goes here -->
+        {% include 'sections/books_content.html' %}
+    </div>
+</section>
+
+<!-- Themes Section -->
+<section id="themes" class="py-5 bg-light">
+    <div class="container">
+        <!-- Your existing themes.html content goes here -->
+        {% include 'sections/themes_content.html' %}
+    </div>
+</section>
+
+<!-- Reading Ideas Section -->
+<section id="reading" class="py-5">
+    <div class="container">
+        <!-- Your reading.html content goes here -->
+        {% include 'sections/reading_content.html' %}
+    </div>
+</section>
+
+<!-- Listening to Ideas Section -->
+<section id="listening" class="py-5 bg-light">
+    <div class="container">
+        <!-- Your listening.html content goes here -->
+        {% include 'sections/listening_content.html' %}
+    </div>
+</section>
+
+<!-- Media Section -->
+<section id="media" class="py-5">
+    <div class="container">
+        <!-- Your existing media.html content goes here -->
+        {% include 'sections/media_content.html' %}
+    </div>
+</section>
+
+<!-- Connect Section -->
+<section id="connect" class="py-5 bg-light">
+    <div class="container">
+        <!-- Your existing connect.html content goes here -->
+        {% include 'sections/connect_content.html' %}
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5">
+    <div class="container">
+        <!-- Your existing contact.html content goes here -->
+        {% include 'sections/contact_content.html' %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        
+        const targetId = this.getAttribute('href');
+        if(targetId === '#') return;
+        
+        const targetElement = document.querySelector(targetId);
+        if(targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 70, // Offset for fixed navbar
+                behavior: 'smooth'
+            });
+            
+            // Update URL without page reload
+            history.pushState(null, null, targetId);
+        }
+    });
+});
+
+// Highlight active nav link on scroll
+window.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+    
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if(scrollY >= (sectionTop - 100)) {
+            current = section.getAttribute('id');
+        }
+    });
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if(link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+{% endblock %}
