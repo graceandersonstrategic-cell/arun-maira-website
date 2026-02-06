@@ -21,12 +21,14 @@ from django.urls import path, include
 from django.conf import settings
 from gateway.views import health_check
 from django.conf.urls.static import static
+from gateway.health_views import health_check 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('gateway.urls')),
     path('healthz/', health_check, name='health_check'),
+    
 ]
 
 if settings.DEBUG:
