@@ -14,19 +14,23 @@ from django.views.decorators.http import require_GET
 from django.utils import timezone
 import os
 from .forms import BookUploadForm
-from .models import Book
+from .models import Book, Theme, GatewayPage, SocialMediaProfile, ContactMessage, NewsletterSubscriber, Article, Talk
+from django.views.decorators.http import require_GET
 
-# Import all models
 from .models import (
     Book, Theme, GatewayPage, SocialMediaProfile, 
     ContactMessage, NewsletterSubscriber, Article, 
     Talk, UploadedFile, SiteSettings
 )
-# Only import BookUploadForm for now
 from .forms import BookUploadForm, ArticleForm, TalkForm
 
-# ========== SIMPLE FORMS FOR UPLOADING ==========
 
+@require_GET
+def health_check(request):
+    """Health check endpoint for Render/Railway monitoring"""
+    return HttpResponse("OK", status=200)
+
+# ========== SIMPLE FORMS FOR UPLOADING ==========
 class ReadingUploadForm(forms.Form):
     """Form for uploading reading materials"""
     TYPES = [
