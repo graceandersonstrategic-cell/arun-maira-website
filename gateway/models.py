@@ -109,20 +109,17 @@ class Article(models.Model):
     title = models.CharField(max_length=600)
     # This is the critical field for the Error 153 fix
     video_id = models.CharField(max_length=20, blank=True, null=True, help_text="YouTube Video ID (e.g., GomzK5HohO4)")
-    # slug = models.SlugField(unique=True, blank=True, help_text="URL-friendly version (auto-generated)")
     slug = models.SlugField(max_length=600, unique=True) # Increased
 
     excerpt = models.TextField(blank=True, help_text="Short summary for cards")
     content = models.TextField(help_text="Main article content (can use basic HTML)")
-    # themes = models.ManyToManyField(Theme, related_name='articles', blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='system')
     subtopic = models.CharField(max_length=50, choices=SUBTOPIC_CHOICES, blank=True)
-    publish_date = models.DateField(null=True, blank=True) # Add this field
     themes = models.ManyToManyField(Theme, blank=True)
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     featured_article = models.BooleanField(default=False)
-    # publish_date = models.DateTimeField(default=timezone.now)
+    publish_date = models.DateTimeField(default=timezone.now)
     
     featured_image = models.ImageField(upload_to='articles/images/%Y/%m/', blank=True)
     document = models.FileField(upload_to='articles/documents/%Y/%m/', blank=True)

@@ -124,15 +124,6 @@ def book_list(request):
 
 # ========== DETAIL VIEWS ==========
 
-# def reading_idea_detail(request, slug):
-#     # This view powers the "Read More" button
-#     article = get_object_or_404(Article, slug=slug)
-#     related = Article.objects.filter(category=article.category, status='published').exclude(id=article.id)[:3]
-#     return render(request, 'reading_idea_detail.html', {
-#         'article': article, 
-#         'related_articles': related
-#     })
-    
 def reading_idea_detail(request, slug):
     # Fetch the specific article being viewed
     article = get_object_or_404(Article, slug=slug)
@@ -143,7 +134,7 @@ def reading_idea_detail(request, slug):
     
     return render(request, 'reading_idea_detail.html', {
         'article': article, 
-        'recent_posts': recent  # Changed name for clarity
+        'recent_posts': recent
     })
 
 def book_detail(request, slug):

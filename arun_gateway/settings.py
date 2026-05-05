@@ -83,17 +83,6 @@ if db_from_env:
     DATABASES['default'].update(db_from_env)
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': os.getenv('DB_NAME', 'arunmaira_gateway_db'),
-#         'USER': os.getenv('DB_USER'),
-#         'PASSWORD': os.getenv('DB_PASSWORD'),
-#         'HOST':  '127.0.0.1',
-#         'PORT': '3306',
-#     }
-# }
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'mail.arunmairagateway.com'
 EMAIL_PORT = 465
