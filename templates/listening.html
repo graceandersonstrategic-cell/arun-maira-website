@@ -1,576 +1,121 @@
-<!DOCTYPE html>
-<html lang="en-IN">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Listening to ideas| Arun Maira - Thoughtful Conversations</title>
-    <meta name="author" content="Arun Maira" />
-    <meta name="description" content="A curated collection of talks, discussions, and podcasts by Arun Maira on systems thinking, governance, and the future of India." />
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="mb-5 text-center">
+        <h1 class="fw-bold display-4 mb-3">Listening to Ideas</h1>
+        <p class="text-muted fs-5 mx-auto" style="max-width: 700px;">
+            Multimedia dialogues, keynote sessions, and conversations on systems thinking and social change.
+        </p>
+        <hr class="mx-auto mt-4" style="width: 60px; height: 3px; background-color: var(--bs-primary);">
+    </div>
     
-    <style>
-        /* Clean, reading-room inspired CSS */
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #7f8c8d;
-            --accent-color: #3498db;
-            --light-bg: #f9f9f7;
-            --border-color: #e0e0e0;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #fff;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* Header */
-        .site-header {
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            margin-bottom: 40px;
-        }
-        
-        .site-title {
-            font-size: 2.5rem;
-            font-weight: normal;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-        
-        .site-subtitle {
-            font-size: 1.1rem;
-            color: var(--secondary-color);
-            font-style: italic;
-        }
-        
-        /* Navigation */
-        .main-nav {
-            margin: 30px 0;
-        }
-        
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-        
-        .nav-links a {
-            text-decoration: none;
-            color: var(--primary-color);
-            font-size: 1.1rem;
-            padding: 5px 0;
-            position: relative;
-        }
-        
-        .nav-links a:hover {
-            color: var(--accent-color);
-        }
-        
-        .nav-links a.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: var(--accent-color);
-        }
-        
-        /* Main Content */
-        .page-intro {
-            margin-bottom: 50px;
-            text-align: center;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .page-title {
-            font-size: 2rem;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-        
-        .page-description {
-            font-size: 1.2rem;
-            color: var(--secondary-color);
-            line-height: 1.8;
-        }
-        
-        /* Theme Navigation */
-        .theme-nav {
-            background: var(--light-bg);
-            padding: 30px;
-            border-radius: 8px;
-            margin-bottom: 40px;
-        }
-        
-        .theme-nav h3 {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-        
-        .theme-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        
-        .theme-btn {
-            padding: 10px 20px;
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .theme-btn:hover {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-        }
-        
-        .theme-btn.active {
-            background: var(--accent-color);
-            color: white;
-            border-color: var(--accent-color);
-        }
-        
-        /* Video Grid Layout */
-        .videos-container {
-            margin-bottom: 60px;
-        }
-        
-        .video-section {
-            margin-bottom: 50px;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
-        }
-        
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 30px;
-        }
-        
-        /* Video Card */
-        .video-card {
-            background: white;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .video-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        
-        .video-thumbnail {
-            position: relative;
-            padding-top: 56.25%; /* 16:9 aspect ratio */
-            background: #000;
-            overflow: hidden;
-        }
-        
-        .video-thumbnail img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .play-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .play-button::after {
-            content: '';
-            width: 0;
-            height: 0;
-            border-left: 15px solid var(--accent-color);
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            margin-left: 5px;
-        }
-        
-        .video-info {
-            padding: 20px;
-        }
-        
-        .video-title {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            line-height: 1.4;
-        }
-        
-        .video-description {
-            color: var(--secondary-color);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        
-        .video-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.85rem;
-            color: var(--secondary-color);
-        }
-        
-        .video-theme {
-            background: var(--light-bg);
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-        }
-        
-        /* Quick Stats */
-        .quick-stats {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 40px;
-            padding: 20px;
-            background: var(--light-bg);
-            border-radius: 8px;
-        }
-        
-        .stat-item {
-            text-align: center;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            color: var(--accent-color);
-            font-weight: bold;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--secondary-color);
-        }
-        
-        /* Footer */
-        .site-footer {
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid var(--border-color);
-            text-align: center;
-            color: var(--secondary-color);
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .video-grid {
-                grid-template-columns: 1fr;
-            }
+    <!-- Videos/Talks Grid -->
+    <div class="row g-4 justify-content-center" id="listening-container">
+        {% for video in videos %}
+        <div class="col-md-6 col-lg-4 listening-item {% if forloop.counter > 6 %}d-none{% endif %}" id="{{ video.slug }}">
+            <div class="card h-100 border-0 shadow-sm hover-lift transition-all">
+                
+                <!-- Media Display Logic -->
+                <div class="ratio ratio-16x9 bg-dark rounded-top overflow-hidden">
+                    {% if video.video_id %}
+                        <iframe 
+                            src="https://www.youtube.com/embed/{{ video.video_id }}"
+                            title="{{ video.title }}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    {% elif video.media_file %}
+                        <video controls width="100%" class="bg-black">
+                            <source src="{{ video.media_file.url }}" type="video/mp4">
+                        </video>
+                    {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-secondary text-white">
+                            <i class="bi bi-mic-fill display-4"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-2">
+                        <span class="badge bg-primary-soft text-primary text-uppercase small" style="font-size: 0.7rem;">
+                            {{ video.get_media_type_display }}
+                        </span>
+                    </div>
+                    
+                    <h5 class="fw-bold mb-2">{{ video.title }}</h5>
             
-            .theme-buttons {
-                justify-content: center;
-            }
-            
-            .nav-links {
-                flex-wrap: wrap;
-                gap: 15px;
-            }
-            
-            .quick-stats {
-                flex-direction: column;
-                gap: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="site-header">
-        <h1 class="site-title">Arun Maira</h1>
-        <p class="site-subtitle">A Reading Room for Ideas</p>
+                    {% if video.description %}
+                    <div class="text-muted small mb-3 line-clamp-2">
+                        {{ video.description|striptags|truncatewords:20 }}
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-auto pt-3 border-top d-flex align-items-center text-muted small">
+                        <span>
+                            <i class="bi bi-calendar3 me-1"></i> 
+                            {{ video.event_date|date:"M d, Y"|default:"Recent" }}
+                        </span>
+                        {% if video.event_name %}
+                            <span class="ms-auto text-truncate" style="max-width: 150px;">
+                                <i class="bi bi-geo-alt me-1"></i> {{ video.event_name }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
         
-        <nav class="main-nav">
-            <ul class="nav-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/reading">Reading Ideas</a></li>
-                <li><a href="/listening" class="active">Listening to Ideas</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section class="theme-nav">
-            <h3>Explore by Theme</h3>
-            <div class="theme-buttons">
-                <button class="theme-btn active" data-theme="all">All Recordings</button>
-                <button class="theme-btn" data-theme="system">The System</button>
-                <button class="theme-btn" data-theme="me-us">Me/Us</button>
-                <button class="theme-btn" data-theme="future-india">Future of India</button>
-                <button class="theme-btn" data-theme="podcast">Podcasts</button>
-                <button class="theme-btn" data-theme="latest">Latest Additions</button>
-            </div>
-        </section>
-
-        <div class="videos-container">
-            <!-- Featured Section -->
-            <section class="video-section">
-                <h3 class="section-title">Recently Added</h3>
-                <div class="video-grid">
-                    <div class="video-card" data-themes="system,future-india">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/GomzK5HohO4/maxresdefault.jpg" alt="Why the World Needs a New Ethical Toolkit">
-                            <div class="play-button" data-video="GomzK5HohO4"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4 class="video-title">Why the World Needs a New Ethical Toolkit</h4>
-                            <p class="video-description">Exploring the necessity for ethical frameworks in modern governance and business practices.</p>
-                            <div class="video-meta">
-                                <span class="video-date">2024</span>
-                                <span class="video-theme">Ethics & Governance</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card" data-themes="system">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/54-BTqYqzQ8/maxresdefault.jpg" alt="India's Century: How to Drive Sustainable, Inclusive Growth?">
-                            <div class="play-button" data-video="54-BTqYqzQ8"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4 class="video-title">India's Century: How to Drive Sustainable, Inclusive Growth?</h4>
-                            <p class="video-description">A discussion on pathways to sustainable development and inclusive economic growth for India.</p>
-                            <div class="video-meta">
-                                <span class="video-date">2023</span>
-                                <span class="video-theme">Economic Growth</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- The System Theme -->
-            <section class="video-section">
-                <h3 class="section-title">The System: Economics, Governance & Ethics</h3>
-                <div class="video-grid">
-                    <div class="video-card" data-themes="system">
-                        <div class="video-thumbnail">
-                            <img src="https://i.vimeocdn.com/video/1763504425_640.jpg" alt="Inserting Ethics into AI before it is too late">
-                            <div class="play-button" data-video="891030404" data-platform="vimeo"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4 class="video-title">Inserting Ethics into AI before it is too late</h4>
-                            <p class="video-description">The urgent need for ethical considerations in artificial intelligence development and deployment.</p>
-                            <div class="video-meta">
-                                <span class="video-date">2023</span>
-                                <span class="video-theme">AI Ethics</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="video-card" data-themes="system">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/lHTxyc77N2M/maxresdefault.jpg" alt="Is the Copernican Moment in Economics About to Come?">
-                            <div class="play-button" data-video="lHTxyc77N2M"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4 class="video-title">Is the Copernican Moment in Economics About to Come?</h4>
-                            <p class="video-description">Questioning fundamental economic paradigms and the need for new economic thinking.</p>
-                            <div class="video-meta">
-                                <span class="video-date">2022</span>
-                                <span class="video-theme">Economic Theory</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Me/Us Theme -->
-            <section class="video-section">
-                <h3 class="section-title">Me/Us: Purpose, Listening & Society</h3>
-                <div class="video-grid">
-                    <div class="video-card" data-themes="me-us">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/2Y2YmOwFElc/maxresdefault.jpg" alt="Listening to People Not Like Us">
-                            <div class="play-button" data-video="2Y2YmOwFElc"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4 class="video-title">Listening to People Not Like Us</h4>
-                            <p class="video-description">The importance of listening across differences for healthy democracies and societies.</p>
-                            <div class="video-meta">
-                                <span class="video-date">2022</span>
-                                <span class="video-theme">Dialogue & Democracy</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Podcasts Section -->
-            <section class="video-section">
-                <h3 class="section-title">Podcast Conversations</h3>
-                <div class="video-grid">
-                    <div class="video-card" data-themes="podcast">
-                        <a href="https://idronline.podlink.to/on-the-contrary" target="_blank" style="text-decoration: none; color: inherit;">
-                            <div class="video-thumbnail">
-                                <img src="/path-to-podcast-cover.jpg" alt="On The Contrary Podcast">
-                                <div class="play-button"></div>
-                            </div>
-                            <div class="video-info">
-                                <h4 class="video-title">On The Contrary Podcast Series</h4>
-                                <p class="video-description">A series of conversations exploring alternative perspectives on contemporary issues.</p>
-                                <div class="video-meta">
-                                    <span class="video-date">Ongoing</span>
-                                    <span class="video-theme">Podcast Series</span>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Complete Archive -->
-            <section class="video-section">
-                <h3 class="section-title">Complete Archive (2014-2024)</h3>
-                <div class="video-grid">
-                    <!-- These would be dynamically loaded -->
-                    <div class="video-card" data-themes="system">
-                        <div class="video-thumbnail">
-                            <img src="https://img.youtube.com/vi/VryKK69iPtI/maxresdefault.jpg" alt="Bharata First: A Billion Fireflies">
-                            <div class="play-button" data-video="VryKK69iPtI"></div>
-                        </div>
-                        <div class="video-info">
-                            <h4 class="video-title">Bharata First: A Billion Fireflies</h4>
-                            <div class="video-meta">
-                                <span class="video-date">2021</span>
-                                <span class="video-theme">National Vision</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Additional archive videos would go here -->
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <footer class="site-footer">
-        <p>© 2024 Arun Maira. A quiet space for thoughtful engagement.</p>
-        <p>No comments, no chatter – just listening and reflection.</p>
-        <p>Website maintained with assistance from thoughtful collaborators.</p>
-    </footer>
-
-    <!-- Video Modal -->
-    <div id="video-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="position: relative; width: 90%; max-width: 900px;">
-            <button id="close-modal" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 30px; cursor: pointer;">×</button>
-            <div id="video-player" style="position: relative; padding-top: 56.25%;">
-                <!-- Video iframe will be inserted here -->
+                <a href="{% url 'talk_detail' video.slug %}" class="stretched-link" aria-label="Explore {{ video.title }}"></a>
             </div>
         </div>
+        {% endfor %}
     </div>
 
-    <script>
-        // Simple JavaScript for filtering and video playback
-        document.addEventListener('DOMContentLoaded', function() {
-            // Theme filtering
-            const themeButtons = document.querySelectorAll('.theme-btn');
-            const videoCards = document.querySelectorAll('.video-card');
+    <!-- Show More Button -->
+    {% if videos|length > 6 %}
+    <div class="text-center mt-5">
+        <button id="load-more-listening" class="btn btn-outline-primary px-5 rounded-pill fw-bold shadow-sm">
+            Show More
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .bg-primary-soft { background-color: rgba(13, 110, 253, 0.1); }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-8px); box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important; }
+    .fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('load-more-listening');
+    const increment = 6; // Number of items to show each time
+
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            // Select all items that are currently hidden
+            const hiddenItems = Array.from(document.querySelectorAll('.listening-item.d-none'));
             
-            themeButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Update active button
-                    themeButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    const selectedTheme = this.dataset.theme;
-                    
-                    // Filter videos
-                    videoCards.forEach(card => {
-                        if (selectedTheme === 'all') {
-                            card.style.display = 'block';
-                        } else {
-                            const cardThemes = card.dataset.themes.split(',');
-                            if (cardThemes.includes(selectedTheme)) {
-                                card.style.display = 'block';
-                            } else {
-                                card.style.display = 'none';
-                            }
-                        }
-                    });
-                });
+            // Slice the first 6 hidden items
+            const nextBatch = hiddenItems.slice(0, increment);
+            
+            nextBatch.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.remove('d-none');
+                    item.classList.add('fade-in-up');
+                }, index * 100); // Staggered entrance
             });
-            
-            // Video playback
-            const playButtons = document.querySelectorAll('.play-button');
-            const videoModal = document.getElementById('video-modal');
-            const videoPlayer = document.getElementById('video-player');
-            const closeModal = document.getElementById('close-modal');
-            
-            playButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const videoId = this.dataset.video;
-                    const platform = this.dataset.platform || 'youtube';
-                    
-                    let embedCode = '';
-                    if (platform === 'youtube') {
-                        embedCode = `<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>`;
-                    } else if (platform === 'vimeo') {
-                        embedCode = `<iframe src="https://player.vimeo.com/video/${videoId}?autoplay=1" width="100%" height="100%" frameborder="0" allow="autoplay; fullscreen" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>`;
-                    }
-                    
-                    videoPlayer.innerHTML = embedCode;
-                    videoModal.style.display = 'flex';
-                });
-            });
-            
-            // Close modal
-            closeModal.addEventListener('click', function() {
-                videoModal.style.display = 'none';
-                videoPlayer.innerHTML = '';
-            });
-            
-            // Close modal when clicking outside
-            videoModal.addEventListener('click', function(e) {
-                if (e.target === videoModal) {
-                    videoModal.style.display = 'none';
-                    videoPlayer.innerHTML = '';
-                }
-            });
+
+            // If no more items are hidden, remove the button
+            if (hiddenItems.length <= increment) {
+                loadMoreBtn.parentElement.style.display = 'none';
+            }
         });
-    </script>
-</body>
-</html>
+    }
+});
+</script>
+{% endblock %}

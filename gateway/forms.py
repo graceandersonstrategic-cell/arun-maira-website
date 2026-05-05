@@ -52,31 +52,38 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         fields = [
-            'title', 'slug', 'content', 'excerpt', 'themes',
-            'external_link', 'document', 'featured_image',
-            'status', 'publish_date', 'reading_time'
+            'title', 'video_id', 'slug', 'category', 'subtopic', 
+            'content', 'excerpt', 'themes', 'external_link', 
+            'document', 'featured_image', 'status', 
+            'publish_date', 'reading_time'
         ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'video_id': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'e.g., GomzK5HohO4 (YouTube ID only)'
+            }),
             'slug': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'subtopic': forms.Select(attrs={'class': 'form-control'}),
             'excerpt': forms.Textarea(attrs={
                 'rows': 3, 
                 'class': 'form-control',
-                'placeholder': 'Brief summary of the article (optional)'
+                'placeholder': 'Brief summary of the article or video'
             }),
             'content': forms.Textarea(attrs={
                 'rows': 15, 
                 'class': 'form-control',
-                'placeholder': 'Write your article here...'
+                'placeholder': 'Write article content or video description here...'
             }),
             'external_link': forms.URLInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'https://example.com/article'
             }),
             'status': forms.Select(attrs={'class': 'form-control'}),
-            'publish_date': forms.DateInput(attrs={
+            'publish_date': forms.DateTimeInput(attrs={
                 'class': 'form-control',
-                'type': 'date'
+                'type': 'datetime-local'
             }),
             'reading_time': forms.NumberInput(attrs={
                 'class': 'form-control',
@@ -85,44 +92,35 @@ class ArticleForm(forms.ModelForm):
             }),
         }
         help_texts = {
+            'video_id': 'Required if this is for the "Listening" page. Enter ONLY the 11-char ID.',
             'slug': 'URL-friendly version of title (auto-generated if left blank)',
-            'content': 'You can use basic HTML tags like <strong>, <em>, <a>, <ul>, <li>',
-            'document': 'Optional PDF or document file',
-            'featured_image': 'Optional featured image for the article',
-            'publish_date': 'Leave blank to publish immediately',
+            'content': 'You can use basic HTML tags like <strong>, <em>, <a>.',
+            'publish_date': 'Set a future date to schedule a post.',
         }
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Make slug field not required if auto-generated
         self.fields['slug'].required = False
-        # Make publish_date field not required
         self.fields['publish_date'].required = False
     
     def clean_document(self):
         document = self.cleaned_data.get('document', False)
         if document:
-            # Validate file extension
             valid_extensions = ['pdf', 'doc', 'docx', 'txt']
             import os
             ext = os.path.splitext(document.name)[1][1:].lower()
             if ext not in valid_extensions:
-                raise forms.ValidationError(
-                    f'Unsupported file extension. Allowed: {", ".join(valid_extensions)}'
-                )
-            
-            # Validate file size (10MB limit)
+                raise forms.ValidationError(f'Unsupported file extension. Allowed: {", ".join(valid_extensions)}')
             if document.size > 10 * 1024 * 1024:
                 raise forms.ValidationError("File too large ( > 10MB )")
         return document
-    
+
     def clean_featured_image(self):
         image = self.cleaned_data.get('featured_image', False)
         if image:
-            if image.size > 5 * 1024 * 1024:  # 5MB limit
+            if image.size > 5 * 1024 * 1024:
                 raise forms.ValidationError("Image file too large ( > 5MB )")
         return image
-
 class TalkForm(forms.ModelForm):
     themes = forms.ModelMultipleChoiceField(
         queryset=Theme.objects.all(),

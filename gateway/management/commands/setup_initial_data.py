@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from gateway.models import GatewayPage, Theme, SocialMediaProfile, Book
+from gateway.models import GatewayPage, Theme, SocialMediaProfile, Book, Article
 
 class Command(BaseCommand):
     help = 'Sets up initial gateway pages, themes, social media profiles, and sample books'
@@ -268,6 +269,57 @@ class Command(BaseCommand):
                 }
             )
             self.stdout.write(self.style.SUCCESS(f"Created/updated book: {book_data['title']}"))
+        
+        # --- NEW SECTION: Import Articles from data.json ---
+        import os
+        import json
+        from django.utils.text import slugify
+        from datetime import datetime
+        from gateway.models import Article  # Ensure 'Article' is in your imports at the top
+
+        json_file_path = 'data.json' # Assuming it's in your project root
+
+        if os.path.exists(json_file_path):
+            self.stdout.write(self.style.MIGRATE_HEADING('\nImporting Articles from data.json...'))
+            with open(json_file_path, 'r', encoding='utf-8') as file:
+                article_data = json.load(file)
+
+                for item in article_data:
+                    # 1. Handle Themes for the article
+                    theme_objs = []
+                    for theme_name in item.get('themes', []):
+                        # This links to the themes you created in the "buckets" section above
+                        theme, created = Theme.objects.get_or_create(
+                            name=theme_name,
+                            defaults={'slug': slugify(theme_name), 'bucket': 'system'} 
+                        )
+                        theme_objs.append(theme)
+
+                    # 2. Parse Date
+                    raw_date = item.get('date', '2026-01-01')
+                    published_date = datetime.strptime(raw_date, '%Y-%m-%d').date()
+
+                    # 3. Create Article
+                    article, created = Article.objects.update_or_create(
+                        title=item.get('title'),
+                        defaults={
+                            'content': item.get('content'),
+                            'type': item.get('type', 'READ'),
+                            'published_date': published_date,
+                            'video_url': item.get('video_url', ''),
+                        }
+                    )
+                    article.themes.set(theme_objs)
+                    
+                    status = "Imported" if created else "Updated"
+                    self.stdout.write(f"- {status}: {article.title}")
+        else:
+            self.stdout.write(self.style.WARNING(f'\nNote: {json_file_path} not found. Skipping article import.'))
+
+        # --- END OF NEW SECTION ---
+
+        self.stdout.write(self.style.SUCCESS('\n✅ Initial setup complete with Arun\'s structure!'))
+        
         
         self.stdout.write(self.style.SUCCESS('\n✅ Initial setup complete with Arun\'s structure!'))
         self.stdout.write(self.style.SUCCESS('\nKey features:'))

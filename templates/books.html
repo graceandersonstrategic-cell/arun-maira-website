@@ -1,57 +1,131 @@
-<!-- templates/books.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="page-header">
-    <h1>Books</h1>
-    <p class="page-subtitle">Published works spanning systems thinking, governance, and economic reimagining</p>
-</div>
+<div class="container py-5">
+    <div class="row mb-5">
+        <div class="col-lg-8">
+            <h1 class="display-4 fw-bold text-dark">{{ page.title|default:"Published Books" }}</h1>
+            <div class="lead text-muted">{{ page.content|safe }}</div>
+        </div>
+    </div>
 
-<div class="main-content">
-    {% if page and page.content %}
-        {{ page.content|safe }}
-    {% else %}
-        <p>Arun Maira's books reflect a lifelong inquiry into how societies and organizations can work more justly, sustainably, and humanely. They combine conceptual clarity with practical insight, drawing on his experience as a planner, corporate leader, and policy advisor.</p>
+    {% if featured_book %}
+    <div class="row mb-5 g-0 rounded-4 overflow-hidden shadow-lg bg-white border">
+        <div class="col-md-4">
+            {% if featured_book.cover_image %}
+                <img src="{{ featured_book.cover_image.url }}" class="img-fluid w-100 h-100" style="object-fit: cover;" alt="{{ featured_book.title }}">
+            {% endif %}
+        </div>
+        <div class="col-md-8 p-4 p-lg-5 d-flex flex-column justify-content-center">
+            <span class="badge bg-primary rounded-pill mb-3 align-self-start">Featured Publication</span>
+            <h2 class="fw-bold mb-2">{{ featured_book.title }}</h2>
+            <p class="text-muted italic mb-4">{{ featured_book.subtitle }}</p>
+            <p class="mb-4 lead text-secondary">{{ featured_book.description|truncatewords:60 }}</p>
+            
+            <div class="d-flex gap-3">
+                {% if featured_book.amazon_link %}
+                    <a href="{{ featured_book.amazon_link }}" target="_blank" class="btn btn-dark px-4">Buy on Amazon</a>
+                {% endif %}
+                <a href="{% url 'book_detail' featured_book.slug %}" class="btn btn-outline-primary px-4">View Details</a>
+            </div>
+        </div>
+    </div>
+    <hr class="my-5">
     {% endif %}
-    
-    {% if books %}
-    <div class="book-grid" style="margin-top: 40px;">
+
+    <!-- Added ID: book-grid -->
+    <div id="book-grid" class="row g-4">
         {% for book in books %}
-        <div class="book-card">
-            {% if book.cover_image %}
-            <div style="margin-bottom: 20px;">
-                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="max-width: 100%; height: auto; border: 1px solid #eae7e0;">
+        <!-- Added Classes: book-item and d-none logic -->
+        <div class="col-md-6 col-lg-4 book-item {% if forloop.counter > 6 %}d-none{% endif %}">
+            <div class="card h-100 shadow-sm border-0 transition-hover">
+                <a href="{% url 'book_detail' book.slug %}" class="text-decoration-none">
+                    <div class="position-relative overflow-hidden bg-light" style="height: 450px;">
+                        {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" class="card-img-top h-100 w-100" alt="{{ book.title }}" style="object-fit: cover;">
+                        {% else %}
+                            <div class="h-100 d-flex align-items-center justify-content-center text-muted">
+                                <span class="display-1">📚</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </a>
+                
+                <div class="card-body">
+                    <h5 class="card-title fw-bold mb-1">{{ book.title }}</h5>
+                    <p class="text-primary small mb-2">{{ book.publication_year }} | {{ book.publisher }}</p>
+                    
+                    <p class="card-text text-secondary small">
+                        {{ book.description|truncatewords:25 }}
+                    </p>
+                </div>
+                
+                <div class="card-footer bg-transparent border-0 pb-4">
+                    <div class="d-flex gap-2 flex-wrap">
+                        {% if book.amazon_link %}
+                            <a href="{{ book.amazon_link }}" target="_blank" class="btn btn-outline-dark btn-sm flex-fill">
+                                Amazon
+                            </a>
+                        {% endif %}
+                        {% if book.goodreads_link %}
+                            <a href="{{ book.goodreads_link }}" target="_blank" class="btn btn-outline-secondary btn-sm flex-fill">
+                                Goodreads
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="text-center mt-2">
+                        <a href="{% url 'book_detail' book.slug %}" class="small text-muted text-decoration-none">View Book Details →</a>
+                    </div>
+                </div>
             </div>
-            {% endif %}
-            
-            <h3 class="book-title">{{ book.title }}</h3>
-            
-            {% if book.subtitle %}
-            <p class="book-subtitle">{{ book.subtitle }}</p>
-            {% endif %}
-            
-            {% if book.publisher or book.publication_year %}
-            <p style="color: #777; font-size: 0.9em; margin-bottom: 10px;">
-                {% if book.publisher %}{{ book.publisher }}{% endif %}
-                {% if book.publication_year %} ({{ book.publication_year }}){% endif %}
-            </p>
-            {% endif %}
-            
-            <p class="book-description">{{ book.description }}</p>
-            
-            <div class="book-links">
-                {% if book.amazon_link %}
-                <a href="{{ book.amazon_link }}" target="_blank">Purchase on Amazon</a>
-                {% endif %}
-                {% if book.goodreads_link %}
-                <a href="{{ book.goodreads_link }}" target="_blank">View on Goodreads</a>
-                {% endif %}
-            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No books have been added to the library yet.</p>
         </div>
         {% endfor %}
     </div>
-    {% else %}
-    <p style="margin-top: 30px; color: #666; font-style: italic;">Book details will be added shortly.</p>
+
+    <!-- Show More Button -->
+    {% if books.count > 6 %}
+    <div class="text-center mt-5">
+        <button id="load-more-books" class="btn btn-outline-dark btn-lg px-5">Show More Books</button>
+    </div>
     {% endif %}
 </div>
+
+<style>
+    .transition-hover {
+        transition: all 0.3s ease;
+    }
+    .transition-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+    .badge.bg-primary {
+        background-color: #8b7355 !important; 
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loadMoreBtn = document.getElementById('load-more-books');
+    const grid = document.getElementById('book-grid');
+    
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+            const hiddenBooks = grid.querySelectorAll('.book-item.d-none');
+            const batchSize = 3; // Show one more row (3 books) at a time
+            
+            for (let i = 0; i < batchSize && i < hiddenBooks.length; i++) {
+                hiddenBooks[i].classList.remove('d-none');
+            }
+            
+            if (grid.querySelectorAll('.book-item.d-none').length === 0) {
+                loadMoreBtn.parentElement.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

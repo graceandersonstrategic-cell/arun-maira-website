@@ -1,40 +1,15 @@
 from django.db import models
-from django.urls import reverse
+import re
+import os
+from django.conf import settings
+from django.db import models
 from django.utils.text import slugify
+from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import User
 import uuid  # Added for unique slugs
-
-class Book(models.Model):
-    """Model for Arun's published books"""
-    title = models.CharField(max_length=200)
-    subtitle = models.CharField(max_length=300, blank=True)
-    description = models.TextField()
-    cover_image = models.ImageField(upload_to='books/', blank=True)
-    amazon_link = models.URLField(blank=True, verbose_name="Amazon Link")
-    goodreads_link = models.URLField(blank=True, verbose_name="Goodreads Link")
-    publisher = models.CharField(max_length=200, blank=True)
-    publication_year = models.IntegerField()
-    is_featured = models.BooleanField(default=False, 
-        help_text="Feature this book on the homepage")
-    
-    class Meta:
-        ordering = ['-publication_year']
-        verbose_name = "Book"
-        verbose_name_plural = "Books"
-    
-    def __str__(self):
-        return self.title
-    
-    def get_absolute_url(self):
-        return reverse('book_list')
-    
-    def save(self, *args, **kwargs):
-        # Clean up URLs if needed
-        if self.amazon_link and 'ref=dp_byline_sr_book' in self.amazon_link:
-            # Extract clean Amazon author page URL
-            self.amazon_link = "https://www.amazon.com/author/arunmaira"
-        super().save(*args, **kwargs)
+from django.db.models.signals import pre_save, post_save
+from django.dispatch import receiver
 
 class Theme(models.Model):
     """Represents the thematic sections in Arun's reading room"""
@@ -45,30 +20,68 @@ class Theme(models.Model):
     ]
     
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, help_text="URL-friendly version of the name")
+    slug = models.SlugField(unique=True, blank=True)
     description = models.TextField(blank=True)
-    bucket = models.CharField(max_length=50, choices=BUCKET_CHOICES, 
-                            default='system',
-                            help_text="Which of Arun's three buckets this theme belongs to")
-    external_link = models.URLField(blank=True, 
-        help_text="Link to this theme in the existing reading room")
-    order = models.IntegerField(default=0, help_text="Order in navigation")
-    
+    bucket = models.CharField(max_length=50, choices=BUCKET_CHOICES, default='system')
+    order = models.IntegerField(default=0)
+
     class Meta:
         ordering = ['bucket', 'order', 'name']
-        verbose_name = "Theme"
-        verbose_name_plural = "Themes"
-    
+
     def __str__(self):
         return f"{self.name} ({self.get_bucket_display()})"
-    
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+        
+class Book(models.Model):
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True, null=True) 
+    subtitle = models.CharField(max_length=300, blank=True)
+    description = models.TextField()
+    cover_image = models.ImageField(upload_to='books/', blank=True)
+    amazon_link = models.URLField(blank=True, verbose_name="Amazon Link")
+    themes = models.ManyToManyField(Theme, related_name='books', blank=True)
+    goodreads_link = models.URLField(blank=True, verbose_name="Goodreads Link")
+    publisher = models.CharField(max_length=200, blank=True)
+    publication_year = models.IntegerField()
+    is_featured = models.BooleanField(
+        default=False, 
+        help_text="Feature this book on the homepage"
+    )
+    
+    class Meta:
+        ordering = ['-publication_year']
+        verbose_name = "Book"
+        verbose_name_plural = "Books"
+    
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        # We will create this 'book_detail' view next
+        return reverse('book_detail', kwargs={'slug': self.slug})
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+            original_slug = self.slug
+            counter = 1
+            # Check for uniqueness
+            while Book.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                self.slug = f"{original_slug}-{counter}"
+                counter += 1
+
+        # Clean Amazon links
+        if self.amazon_link and '?' in self.amazon_link:
+            self.amazon_link = self.amazon_link.split('?')[0]
+        
+        super().save(*args, **kwargs)
 
 class Article(models.Model):
-    """For Arun to upload his articles/essays - Updated for reading.html integration"""
+    """For Arun to upload his articles/essays and Videos"""
     STATUS_CHOICES = [
         ('draft', 'Draft'),
         ('published', 'Published'),
@@ -79,139 +92,113 @@ class Article(models.Model):
         ('system', 'The System'),
         ('me_us', 'Me/Us'),
         ('india', 'Future of India'),
+        ('READ', 'Read (Articles)'),
     ]
     
     SUBTOPIC_CHOICES = [
-        # The System subtopics (matching reading.html)
         ('complex-systems', 'Complex Systems: Social Change'),
         ('democracy-policy', 'Democracy and Public Policy'),
         ('evolution-economics', 'Evolution of Economics'),
         ('jobs-employment', 'Jobs and Employment'),
         ('business-ethics', 'Business Ethics'),
-        # Me/Us subtopics
         ('purpose-lives', 'Purpose of Our Lives'),
         ('listening-others', 'Listening to Others'),
-        # Future of India subtopic
         ('future-india', 'Future of India'),
     ]
     
-    # Basic Information
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, blank=True, 
-                           help_text="URL-friendly version (auto-generated)")
-    excerpt = models.TextField(blank=True, help_text="Short summary for cards in reading.html")
+    title = models.CharField(max_length=600)
+    # This is the critical field for the Error 153 fix
+    video_id = models.CharField(max_length=20, blank=True, null=True, help_text="YouTube Video ID (e.g., GomzK5HohO4)")
+    # slug = models.SlugField(unique=True, blank=True, help_text="URL-friendly version (auto-generated)")
+    slug = models.SlugField(max_length=600, unique=True) # Increased
+
+    excerpt = models.TextField(blank=True, help_text="Short summary for cards")
     content = models.TextField(help_text="Main article content (can use basic HTML)")
+    # themes = models.ManyToManyField(Theme, related_name='articles', blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='system')
+    subtopic = models.CharField(max_length=50, choices=SUBTOPIC_CHOICES, blank=True)
+    publish_date = models.DateField(null=True, blank=True) # Add this field
+    themes = models.ManyToManyField(Theme, blank=True)
     
-    # Categorization (matching reading.html structure)
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, 
-                               default='system',
-                               help_text="Main category matching reading.html")
-    subtopic = models.CharField(max_length=50, choices=SUBTOPIC_CHOICES, blank=True,
-                               help_text="Specific subtopic from reading.html")
-    themes = models.ManyToManyField(Theme, blank=True, 
-                                   help_text="Select relevant themes")
-    
-    # Status & Visibility
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
-    featured_article = models.BooleanField(default=False, 
-                                          help_text="Feature this article (shows star in admin)")
-    publish_date = models.DateTimeField(default=timezone.now, 
-                                       help_text="When to publish")
+    featured_article = models.BooleanField(default=False)
+    # publish_date = models.DateTimeField(default=timezone.now)
     
-    # Media & Files
-    featured_image = models.ImageField(upload_to='articles/images/%Y/%m/', blank=True,
-                                      help_text="Featured image for the article")
-    document = models.FileField(upload_to='articles/documents/%Y/%m/', blank=True,
-                               help_text="PDF or document file (optional)")
+    featured_image = models.ImageField(upload_to='articles/images/%Y/%m/', blank=True)
+    document = models.FileField(upload_to='articles/documents/%Y/%m/', blank=True)
     
-    # Reading Experience
-    reading_time = models.IntegerField(blank=True, null=True, 
-                                      help_text="Estimated reading time in minutes (auto-calculated)")
-    estimated_read_time = models.CharField(max_length=50, blank=True,
-                                          help_text="Auto-calculated: '5 min read'")
+    reading_time = models.IntegerField(blank=True, null=True)
+    estimated_read_time = models.CharField(max_length=50, blank=True)
     
-    # External Links
-    external_link = models.URLField(blank=True, 
-                                   help_text="Link if published elsewhere")
+    external_link = models.URLField(blank=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     
-    # SEO & Metadata
-    meta_description = models.TextField(blank=True, 
-                                       help_text="SEO description (max 160 characters)")
-    meta_keywords = models.CharField(max_length=200, blank=True,
-                                    help_text="SEO keywords (comma-separated)")
-    
-    # System
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True,
-                              help_text="Article author")
-    
+
     class Meta:
         ordering = ['-publish_date', '-created_at']
         verbose_name = "Article"
         verbose_name_plural = "Articles"
-        indexes = [
-            models.Index(fields=['status', 'publish_date']),
-            models.Index(fields=['category', 'subtopic']),
-            models.Index(fields=['featured_article']),
-            models.Index(fields=['slug']),
-        ]
-    
+
     def __str__(self):
         return f"{self.title} ({self.get_status_display()})"
-    
+
     def save(self, *args, **kwargs):
-        # Auto-generate slug if not provided
         if not self.slug:
             self.slug = slugify(self.title)
         
-        # Auto-calculate reading time if not provided
         if not self.reading_time and self.content:
             word_count = len(self.content.split())
-            self.reading_time = max(1, word_count // 200)  # 200 words per minute
+            self.reading_time = max(1, word_count // 200)
             self.estimated_read_time = f"{self.reading_time} min read"
-        elif self.reading_time and not self.estimated_read_time:
-            self.estimated_read_time = f"{self.reading_time} min read"
-        
-        # Ensure publish_date is set for published articles
-        if self.status == 'published' and not self.publish_date:
-            self.publish_date = timezone.now()
         
         super().save(*args, **kwargs)
-    
-    def get_absolute_url(self):
-        """Generate URL matching reading.html structure"""
-        if self.subtopic:
-            # Matches reading.html#subtopic-slug format
-            return f"/reading.html#{self.subtopic}/{self.slug}"
-        else:
-            return f"/reading.html#article/{self.slug}"
-    
-    @property
-    def is_published(self):
-        return self.status == 'published'
-    
-    @property
-    def display_category(self):
-        """Get display name for category"""
-        return dict(self.CATEGORY_CHOICES).get(self.category, self.category)
-    
-    @property
-    def display_subtopic(self):
-        """Get display name for subtopic"""
-        return dict(self.SUBTOPIC_CHOICES).get(self.subtopic, self.subtopic)
-    
-    def theme_names(self):
-        return ", ".join([theme.name for theme in self.themes.all()])
-    
-    def get_preview_url(self):
-        """Get preview URL for admin"""
-        return self.get_absolute_url()
-    
-    def get_absolute_url(self):
-        return reverse('reading_idea_detail', kwargs={'slug': self.slug})
-    
 
+    def get_absolute_url(self):
+        # Simplified to match your project's URL patterns
+        return reverse('article_detail', kwargs={'slug': self.slug})
+
+    @property
+    def first_image(self):
+        if self.featured_image:
+            return self.featured_image.url
+
+        match = re.search(r'src="([^"]+)"', self.content or "")
+        if match:
+            url = match.group(1)
+        
+            # Only process local media paths
+            if "/media/" in url:
+                # 1. Get the directory and the filename the database wants
+                # e.g., 'articles/images/2026/01/' and 'rsw_540_23.jpg'
+                clean_path = url.split('/media/')[-1]
+                directory = os.path.join(settings.MEDIA_ROOT, os.path.dirname(clean_path))
+                target_file = os.path.basename(clean_path)
+            
+                # 2. If the directory doesn't exist, fallback to live site
+                if not os.path.exists(directory):
+                    return f"https://www.arunmaira.com{url}"
+            
+                # 3. Check for the exact file
+                if os.path.exists(os.path.join(directory, target_file)):
+                    return url
+            
+                # 4. FUZZY MATCH: Look for a file that STARTS with the target name
+                # This fixes 'rsw_540_23.jpg' vs 'rsw_540_23_kZkpGC7.jpg'
+                base_name = os.path.splitext(target_file)[0] # 'rsw_540_23'
+                for actual_file in os.listdir(directory):
+                    if actual_file.startswith(base_name):
+                        # Return the path to the actual file found on disk
+                        relative_path = os.path.join(os.path.dirname(clean_path), actual_file)
+                        return f"{settings.MEDIA_URL}{relative_path.replace('\\', '/')}"
+            
+                # 5. Ultimate Fallback: Point to the original live website
+                return f"https://www.arunmaira.com/media/articles/images/2026/01/{target_file}"
+                
+            return url
+        return None
+    
 class Talk(models.Model):
     """For Arun to upload audio/video recordings"""
     TYPE_CHOICES = [
@@ -221,43 +208,64 @@ class Talk(models.Model):
         ('lecture', 'Lecture'),
         ('conversation', 'Conversation'),
     ]
-    
-    title = models.CharField(max_length=200)
+
+    title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True)
-    description = models.TextField()
+            #Changed to blank=True so it's no longer required in Admin
+    description = models.TextField(blank=True, null=True)
+    themes = models.ManyToManyField(Theme, related_name='talks', blank=True) 
     media_type = models.CharField(max_length=50, choices=TYPE_CHOICES)
-    media_file = models.FileField(upload_to='talks/media/%Y/%m/', blank=True,
-                                 help_text="Audio/Video file (max 500MB)")
-    external_link = models.URLField(blank=True, 
-                                   help_text="YouTube, Vimeo, or other external link")
-    thumbnail = models.ImageField(upload_to='talks/thumbnails/%Y/%m/', blank=True,
-                                 help_text="Thumbnail image")
-    themes = models.ManyToManyField(Theme, blank=True)
+    media_file = models.FileField(
+        upload_to='talks/media/%Y/%m/', 
+        blank=True,
+        help_text="Audio/Video file (max 500MB)"
+    )
+    external_link = models.URLField(
+        blank=True, 
+        help_text="YouTube, Vimeo, or other external link"
+    )
+    # New field to store the ID directly
+    video_id = models.CharField(max_length=50, blank=True, editable=False)
+    
+    thumbnail = models.ImageField(upload_to='talks/thumbnails/%Y/%m/', blank=True)
+    themes = models.ManyToManyField('Theme', blank=True)
     event_name = models.CharField(max_length=200, blank=True)
     event_date = models.DateField(blank=True, null=True)
-    duration = models.DurationField(blank=True, null=True, 
-                                   help_text="HH:MM:SS format")
+    duration = models.DurationField(blank=True, null=True, help_text="HH:MM:SS format")
     created_at = models.DateTimeField(auto_now_add=True)
-    is_featured = models.BooleanField(default=False, 
-                                     help_text="Feature this talk on the listening page")
-    
+    is_featured = models.BooleanField(default=False)
+
     class Meta:
         ordering = ['-event_date', '-created_at']
         verbose_name = "Talk"
         verbose_name_plural = "Talks"
-    
+
     def __str__(self):
         return f"{self.title} ({self.get_media_type_display()})"
-    
+
     def save(self, *args, **kwargs):
+        # 1. Automatic Slug Generation with Uniqueness Check
         if not self.slug:
             self.slug = slugify(self.title)
+            original_slug = self.slug
+            counter = 1
+            while Talk.objects.filter(slug=self.slug).exists():
+                self.slug = f"{original_slug}-{counter}"
+                counter += 1
+
+        # 2. Automatic YouTube ID Extraction
+        if self.external_link:
+            pattern = r'(?:v=|\/|embed\/|youtu.be\/)([0-9A-Za-z_-]{11})'
+            match = re.search(pattern, self.external_link)
+            if match:
+                self.video_id = match.group(1)
+
         super().save(*args, **kwargs)
-    
+
     def get_absolute_url(self):
-        """Generate URL for listening.html"""
-        return f"/listening.html#{self.slug}"
-    
+        """Generate URL for listening page anchor"""
+        return f"/listening/# {self.slug}"
+
     def has_media(self):
         return bool(self.media_file or self.external_link)
 
@@ -319,7 +327,6 @@ class GatewayPage(models.Model):
         ('themes', 'Themes Overview'),
         ('media', 'Media & Press'),
         ('contact', 'Contact'),
-        ('connect', 'Connect'),
         ('reading', 'Reading Ideas'),
         ('listening', 'Listening to Ideas'),
         ('articles', 'Articles'),
@@ -357,7 +364,6 @@ class GatewayPage(models.Model):
             'themes': '/reading.html',  # Direct to reading.html
             'media': '/media.html',
             'contact': '/contact.html',
-            'connect': '/connect.html',
             'reading': '/reading.html',  # Direct link
             'listening': '/listening.html',    # Direct link
             'articles': '/reading.html#articles',
@@ -373,12 +379,6 @@ class SocialMediaProfile(models.Model):
         ('goodreads', 'Goodreads'),
         ('amazon', 'Amazon Author'),
         ('newsletter', 'Newsletter'),
-        ('youtube', 'YouTube'),
-        ('instagram', 'Instagram'),
-        ('facebook', 'Facebook'),
-        ('website', 'Website'),
-        ('podcast', 'Podcast'),
-        ('medium', 'Medium'),
     ]
     
     platform = models.CharField(max_length=50, choices=PLATFORM_CHOICES)
@@ -418,12 +418,6 @@ class SocialMediaProfile(models.Model):
             'goodreads': 'goodreads',
             'amazon': 'amazon',
             'newsletter': 'envelope',
-            'youtube': 'youtube',
-            'instagram': 'instagram',
-            'facebook': 'facebook',
-            'website': 'globe',
-            'podcast': 'podcast',
-            'medium': 'medium',
         }
         return icon_map.get(self.platform, 'link')
 
@@ -558,9 +552,6 @@ class SiteSettings(models.Model):
         return obj
 
 # Signal imports
-from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver
-
 @receiver(pre_save, sender=Article)
 def article_pre_save(sender, instance, **kwargs):
     """Auto-generate slug and reading time for articles"""

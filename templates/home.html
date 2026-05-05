@@ -1,66 +1,125 @@
-<!-- templates/home.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="page-header">
-    <h1>A Quiet Space for Thoughtful Inquiry</h1>
-    <p class="page-subtitle">Systems thinking, governance, equity, and the care economy</p>
-</div>
-
-<div class="main-content">
-    {% if page and page.content %}
-        {{ page.content|safe }}
-    {% else %}
-        <p>Welcome. This space is intended as a gateway to the work of Arun Maira—writer, former planner, and independent thinker focused on systemic change, governance, and the human dimensions of economics.</p>
-        
-        <p>Here you will find an overview of his published books, the principal themes that shape his writing, and a quiet pathway into his deeper body of work. The intention is not to host conversation, but to offer a clear, respectful entry point for those encountering his ideas for the first time.</p>
-        
-        <p>For those already familiar with his writing, the reading and listening rooms remain exactly as they have always been—undisturbed archives of essays, articles, and talks, organized thematically and without commentary.</p>
-    {% endif %}
-    
-    {% if featured_books %}
-    <div style="margin-top: 50px;">
-        <h2 style="font-size: 1.5em; margin-bottom: 20px; color: #555;">Featured Works</h2>
-        <div class="book-grid">
-            {% for book in featured_books %}
-            <div class="book-card">
-                <h3 class="book-title">{{ book.title }}</h3>
-                {% if book.subtitle %}
-                <p class="book-subtitle">{{ book.subtitle }}</p>
-                {% endif %}
-                <p class="book-description">{{ book.description|truncatewords:50 }}</p>
-                <div class="book-links">
-                    {% if book.amazon_link %}
-                    <a href="{{ book.amazon_link }}" target="_blank">Find on Amazon</a>
-                    {% endif %}
-                    {% if book.goodreads_link %}
-                    <a href="{{ book.goodreads_link }}" target="_blank">View on Goodreads</a>
+<!-- Hero Section: The Orientation Layer -->
+<section class="py-5 bg-white border-bottom">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-3 fw-bold mb-4">Shaping a Better World for <span class="text-primary">Everyone.</span></h1>
+                <p class="lead text-muted mb-5">
+                    Welcome to a quiet space for systems thinking. Explore a library of curated articles, 
+                    books, and dialogues organized into three core themes of inquiry.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="#gateway" class="btn btn-primary btn-lg px-4">Explore Themes</a>
+                    <a href="{% url 'book_list' %}" class="btn btn-outline-dark btn-lg px-4">View Books</a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-flex justify-content-center">
+                <div class="position-relative">
+                    {% if page.featured_image %}
+                        <img src="{{ page.featured_image.url }}" 
+                             class="rounded-circle shadow-lg object-fit-cover" 
+                             style="width: 400px; height: 400px; border: 15px solid white;" 
+                             alt="Arun Maira">
+                    {% else %}
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" 
+                             style="width: 400px; height: 400px;">
+                            <i class="bi bi-person-bounding-box text-secondary" style="font-size: 8rem;"></i>
+                        </div>
                     {% endif %}
                 </div>
             </div>
-            {% endfor %}
         </div>
     </div>
-    {% endif %}
-    
-    {% if themes %}
-    <div style="margin-top: 50px;">
-        <h2 style="font-size: 1.5em; margin-bottom: 20px; color: #555;">Thematic Pathways</h2>
-        <p>Arun's writings are organized around several interconnected themes. These serve as entry points into the reading room.</p>
-        <div class="theme-list">
-            {% for theme in themes %}
-            <div class="theme-card">
-                <h3 class="theme-name">{{ theme.name }}</h3>
-                {% if theme.description %}
-                <p class="theme-description">{{ theme.description|truncatewords:30 }}</p>
-                {% endif %}
-                {% if theme.external_link %}
-                <a href="{{ theme.external_link }}" class="theme-link" target="_blank">Explore {{ theme.name }} in the reading room →</a>
-                {% endif %}
+</section>
+
+<!-- The Thematic Gateway: The "Buckets" -->
+<section id="gateway" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Explore by Theme</h2>
+            <p class="text-muted">A structured pathway through 400+ articles and dialogues.</p>
+        </div>
+        
+        <div class="row g-4">
+            <!-- The System -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4">
+                    <div class="mb-3 text-primary"><i class="bi bi-diagram-3 fs-1"></i></div>
+                    <h3 class="h4 fw-bold">The System</h3>
+                    <p class="text-muted small">Global structures, economics, and institutional governance.</p>
+                    <hr>
+                    <ul class="list-unstyled">
+                        {% for theme in themes.system %}
+                        <li class="mb-2">
+                            <a href="{% url 'theme_detail' theme.slug %}" class="text-decoration-none link-dark">
+                                {{ theme.name }} <i class="bi bi-arrow-right small text-muted"></i>
+                            </a>
+                        </li>
+                        {% empty %}
+                        <li class="text-muted small">Coming soon</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
-            {% endfor %}
+
+            <!-- Me/Us -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4">
+                    <div class="mb-3 text-success"><i class="bi bi-people fs-1"></i></div>
+                    <h3 class="h4 fw-bold">Me/Us</h3>
+                    <p class="text-muted small">Human ethics, leadership, and shared social experience.</p>
+                    <hr>
+                    <ul class="list-unstyled">
+                        {% for theme in themes.me_us %}
+                        <li class="mb-2">
+                            <a href="{% url 'theme_detail' theme.slug %}" class="text-decoration-none link-dark">
+                                {{ theme.name }} <i class="bi bi-arrow-right small text-muted"></i>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Future of India -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm p-4 border-top border-primary border-4">
+                    <div class="mb-3 text-danger"><i class="bi bi-geo-alt fs-1"></i></div>
+                    <h3 class="h4 fw-bold">Future of India</h3>
+                    <p class="text-muted small">Navigating India's unique path in social and economic development.</p>
+                    <hr>
+                    <ul class="list-unstyled">
+                        {% for theme in themes.future_india %}
+                        <li class="mb-2">
+                            <a href="{% url 'theme_detail' theme.slug %}" class="text-decoration-none link-dark">
+                                {{ theme.name }} <i class="bi bi-arrow-right small text-muted"></i>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
-    {% endif %}
-</div>
+</section>
+
+<!-- Quick Stats (Moved to Footer or secondary section) -->
+<section class="py-5 bg-white border-top">
+    <div class="container">
+        <div class="row g-4 text-center text-muted">
+            <div class="col-md-4">
+                <span class="h2 fw-bold d-block text-dark">465+</span> Articles
+            </div>
+            <div class="col-md-4">
+                <span class="h2 fw-bold d-block text-dark">26+</span> Dialogues
+            </div>
+            <div class="col-md-4">
+                <span class="h2 fw-bold d-block text-dark">10+</span> Books
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'book_list' %}">Library</a></li>
+            <li class="breadcrumb-item active">{{ book.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <div class="col-md-4">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="img-fluid rounded shadow-lg w-100" alt="{{ book.title }}">
+            {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center rounded" style="height: 500px;">
+                    <span class="display-1">📚</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-8">
+            <h1 class="display-4 fw-bold mb-2">{{ book.title }}</h1>
+            {% if book.subtitle %}
+                <h2 class="h4 text-muted italic mb-4">{{ book.subtitle }}</h2>
+            {% endif %}
+
+            <hr class="my-4">
+
+            <div class="book-description mb-5">
+                <h3 class="h5 fw-bold text-uppercase small tracking-wider mb-3">About this book</h3>
+                <div class="lead text-secondary" style="line-height: 1.8;">
+                    {{ book.description|linebreaks }}
+                </div>
+            </div>
+
+            <div class="card bg-light border-0 p-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <p class="mb-1"><strong>Publisher:</strong> {{ book.publisher }}</p>
+                        <p class="mb-0"><strong>Year:</strong> {{ book.publication_year }}</p>
+                    </div>
+                    <div class="col-lg-6 mt-3 mt-lg-0 text-lg-end">
+                        <div class="d-flex gap-2 justify-content-lg-end">
+                            {% if book.amazon_link %}
+                                <a href="{{ book.amazon_link }}" target="_blank" class="btn btn-dark">
+                                    <i class="fab fa-amazon me-2"></i>Buy on Amazon
+                                </a>
+                            {% endif %}
+                            {% if book.goodreads_link %}
+                                <a href="{{ book.goodreads_link }}" target="_blank" class="btn btn-outline-secondary">
+                                    <i class="fab fa-goodreads-g me-2"></i>Goodreads
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
