@@ -33,4 +33,7 @@ Thumbs.db
 
 # Database
 *.sqlite3
-*.db
+*.dbmedia.zip.zip
+*.zip
+crop_thumbnails.py
+recrop_thumbnails.py
