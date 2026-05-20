@@ -22,3 +22,4 @@ gunicorn==24.1.1
 whitenoise==6.11.0
 psycopg2-binary==2.9.11Pillow==12.2.0
 django-import-export==4.4.1
+django-axes

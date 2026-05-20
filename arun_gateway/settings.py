@@ -32,12 +32,14 @@ INSTALLED_APPS = [
     "gateway",
     "django_extensions",
     "import_export",
+    "axes",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware", 
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "axes.middleware.AxesMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -140,3 +142,13 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 # Allow YouTube thumbnails to load
 SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
+
+# ===== BRUTE FORCE PROTECTION =====
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1
+AXES_LOCKOUT_TEMPLATE = None
+AXES_RESET_ON_SUCCESS = True
