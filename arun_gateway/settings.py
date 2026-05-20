@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "gateway",
     "django_extensions",
+    "import_export",
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,5 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
+# Allow YouTube thumbnails to load
+SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'

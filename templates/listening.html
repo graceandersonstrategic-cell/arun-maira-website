@@ -18,14 +18,14 @@
             <div class="card h-100 border-0 shadow-sm hover-lift transition-all">
                 
                 <!-- Media Display Logic -->
-                <div class="ratio ratio-16x9 bg-dark rounded-top overflow-hidden">
+                <div style="height:160px;overflow:hidden;border-radius:8px 8px 0 0;background:#000;">
                     {% if video.video_id %}
-                        <iframe 
-                            src="https://www.youtube.com/embed/{{ video.video_id }}"
-                            title="{{ video.title }}"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                        </iframe>
+                                                <a href="{{ video.external_link }}" target="_blank" style="display:block;width:100%;height:100%;background:#000;position:relative;overflow:hidden;">
+                            <img src="{{ video.thumbnail.url }}" style="width:100%;height:100%;object-fit:cover;" alt="{{ video.title }}">
+                            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,0,0,0.9);border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+                                <span style="color:white;font-size:24px;margin-left:4px;">&#9654;</span>
+                            </div>
+                        </a>
                     {% elif video.media_file %}
                         <video controls width="100%" class="bg-black">
                             <source src="{{ video.media_file.url }}" type="video/mp4">

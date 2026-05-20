@@ -1,4 +1,7 @@
 from django.contrib import admin
+from import_export import resources
+from import_export.admin import ExportMixin
+
 from django.utils.html import format_html
 from django.utils.text import Truncator
 from django.utils.safestring import mark_safe
@@ -13,6 +16,21 @@ from .models import (
 admin.site.site_header = "Arun Maira Content Management"
 admin.site.site_title = "Arun Maira Admin"
 admin.site.index_title = "Welcome to Arun's Content Management Portal"
+
+# ===== EXPORT RESOURCES =====
+class ArticleResource(resources.ModelResource):
+    class Meta:
+        model = Article
+        fields = ('title', 'status', 'publish_date', 'reading_time')
+
+class ContactMessageResource(resources.ModelResource):
+    class Meta:
+        model = ContactMessage
+
+class NewsletterSubscriberResource(resources.ModelResource):
+    class Meta:
+        model = NewsletterSubscriber
+        fields = ('email', 'subscription_type', 'is_active', 'is_confirmed', 'subscribed_at')
 
 # ===== THEME ADMIN =====
 @admin.register(Theme)
@@ -105,9 +123,25 @@ class BookAdmin(admin.ModelAdmin):
             return format_html('<a href="{}" target="_blank" style="color: #ff9900;"><i class="fab fa-amazon"></i> Shop</a>', obj.amazon_link)
         return "—"
 
+# ===== EXPORT RESOURCES =====
+class ArticleResource(resources.ModelResource):
+    class Meta:
+        model = Article
+        fields = ('title', 'status', 'publish_date', 'reading_time')
+
+class ContactMessageResource(resources.ModelResource):
+    class Meta:
+        model = ContactMessage
+
+class NewsletterSubscriberResource(resources.ModelResource):
+    class Meta:
+        model = NewsletterSubscriber
+        fields = ('email', 'subscription_type', 'is_active', 'is_confirmed', 'subscribed_at')
+
 # ===== ARTICLE ADMIN =====
 @admin.register(Article)
-class ArticleAdmin(admin.ModelAdmin):
+class ArticleAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = ArticleResource
     list_display = ('title', 'status_display', 'category_display', 'publish_date', 'article_preview')
     list_filter = ('status', 'category', 'publish_date')
     filter_horizontal = ('themes',)
@@ -160,13 +194,15 @@ class UploadedFileAdmin(admin.ModelAdmin):
     list_display = ('title', 'file_type', 'uploaded_at')
 
 @admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
+class ContactMessageAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = ContactMessageResource
     list_display = ('name', 'email', 'submitted_at', 'is_read')
     list_editable = ('is_read',)
     readonly_fields = ('submitted_at', 'name', 'email', 'message')
 
 @admin.register(NewsletterSubscriber)
-class NewsletterAdmin(admin.ModelAdmin):
+class NewsletterAdmin(ExportMixin, admin.ModelAdmin):
+    resource_class = NewsletterSubscriberResource
     list_display = ('email', 'subscription_type', 'is_active', 'is_confirmed', 'subscribed_at')
     list_filter = ('is_active', 'subscription_type', 'is_confirmed')
     search_fields = ('email', 'name', 'organization')
@@ -183,3 +219,18 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+class NewsletterSubscriberResource(resources.ModelResource):
+    class Meta:
+        model = NewsletterSubscriber
+        fields = ('email', 'subscription_type', 'is_active', 'is_confirmed', 'subscribed_at')
+
+class ContactMessageResource(resources.ModelResource):
+    class Meta:
+        model = ContactMessage
+
+class ArticleResource(resources.ModelResource):
+    class Meta:
+        model = Article
+        fields = ('title', 'status', 'publish_date', 'reading_time')

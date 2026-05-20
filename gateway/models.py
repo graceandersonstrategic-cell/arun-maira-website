@@ -35,6 +35,42 @@ class Theme(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+        # Auto-download and crop YouTube thumbnail if not already set
+        if hasattr(self, 'external_link') and hasattr(self, 'thumbnail') and self.external_link and not self.thumbnail:
+            try:
+                import re, requests
+                from io import BytesIO
+                from PIL import Image
+                from django.conf import settings
+                import os
+
+                vid_match = re.search(r'(?:v=|youtu\.be/)([a-zA-Z0-9_-]{11})', self.external_link)
+                if vid_match:
+                    vid = vid_match.group(1)
+                    thumb_dir = os.path.join(settings.MEDIA_ROOT, 'talks/thumbnails')
+                    os.makedirs(thumb_dir, exist_ok=True)
+                    thumb_path = f'talks/thumbnails/{vid}.jpg'
+                    full_path = os.path.join(settings.MEDIA_ROOT, thumb_path)
+
+                    if not os.path.exists(full_path):
+                        for quality in ['maxresdefault', 'hqdefault']:
+                            url = f'https://img.youtube.com/vi/{vid}/{quality}.jpg'
+                            r = requests.get(url, timeout=10)
+                            if r.status_code == 200:
+                                img = Image.open(BytesIO(r.content))
+                                w, h = img.size
+                                top = int(h * 0.22)
+                                bottom = int(h * 0.18)
+                                cropped = img.crop((0, top, w, h - bottom))
+                                final = cropped.resize((640, 360), Image.LANCZOS)
+                                final.save(full_path, 'JPEG', quality=90)
+                                break
+
+                    # Use update to avoid recursion
+                    Talk.objects.filter(pk=self.pk).update(thumbnail=thumb_path)
+            except Exception as e:
+                print(f'Thumbnail auto-download error: {e}')
         
 class Book(models.Model):
     title = models.CharField(max_length=200)
@@ -79,6 +115,42 @@ class Book(models.Model):
             self.amazon_link = self.amazon_link.split('?')[0]
         
         super().save(*args, **kwargs)
+
+        # Auto-download and crop YouTube thumbnail if not already set
+        if hasattr(self, 'external_link') and hasattr(self, 'thumbnail') and self.external_link and not self.thumbnail:
+            try:
+                import re, requests
+                from io import BytesIO
+                from PIL import Image
+                from django.conf import settings
+                import os
+
+                vid_match = re.search(r'(?:v=|youtu\.be/)([a-zA-Z0-9_-]{11})', self.external_link)
+                if vid_match:
+                    vid = vid_match.group(1)
+                    thumb_dir = os.path.join(settings.MEDIA_ROOT, 'talks/thumbnails')
+                    os.makedirs(thumb_dir, exist_ok=True)
+                    thumb_path = f'talks/thumbnails/{vid}.jpg'
+                    full_path = os.path.join(settings.MEDIA_ROOT, thumb_path)
+
+                    if not os.path.exists(full_path):
+                        for quality in ['maxresdefault', 'hqdefault']:
+                            url = f'https://img.youtube.com/vi/{vid}/{quality}.jpg'
+                            r = requests.get(url, timeout=10)
+                            if r.status_code == 200:
+                                img = Image.open(BytesIO(r.content))
+                                w, h = img.size
+                                top = int(h * 0.22)
+                                bottom = int(h * 0.18)
+                                cropped = img.crop((0, top, w, h - bottom))
+                                final = cropped.resize((640, 360), Image.LANCZOS)
+                                final.save(full_path, 'JPEG', quality=90)
+                                break
+
+                    # Use update to avoid recursion
+                    Talk.objects.filter(pk=self.pk).update(thumbnail=thumb_path)
+            except Exception as e:
+                print(f'Thumbnail auto-download error: {e}')
 
 class Article(models.Model):
     """For Arun to upload his articles/essays and Videos"""
@@ -152,6 +224,42 @@ class Article(models.Model):
         
         super().save(*args, **kwargs)
 
+        # Auto-download and crop YouTube thumbnail if not already set
+        if hasattr(self, 'external_link') and hasattr(self, 'thumbnail') and self.external_link and not self.thumbnail:
+            try:
+                import re, requests
+                from io import BytesIO
+                from PIL import Image
+                from django.conf import settings
+                import os
+
+                vid_match = re.search(r'(?:v=|youtu\.be/)([a-zA-Z0-9_-]{11})', self.external_link)
+                if vid_match:
+                    vid = vid_match.group(1)
+                    thumb_dir = os.path.join(settings.MEDIA_ROOT, 'talks/thumbnails')
+                    os.makedirs(thumb_dir, exist_ok=True)
+                    thumb_path = f'talks/thumbnails/{vid}.jpg'
+                    full_path = os.path.join(settings.MEDIA_ROOT, thumb_path)
+
+                    if not os.path.exists(full_path):
+                        for quality in ['maxresdefault', 'hqdefault']:
+                            url = f'https://img.youtube.com/vi/{vid}/{quality}.jpg'
+                            r = requests.get(url, timeout=10)
+                            if r.status_code == 200:
+                                img = Image.open(BytesIO(r.content))
+                                w, h = img.size
+                                top = int(h * 0.22)
+                                bottom = int(h * 0.18)
+                                cropped = img.crop((0, top, w, h - bottom))
+                                final = cropped.resize((640, 360), Image.LANCZOS)
+                                final.save(full_path, 'JPEG', quality=90)
+                                break
+
+                    # Use update to avoid recursion
+                    Talk.objects.filter(pk=self.pk).update(thumbnail=thumb_path)
+            except Exception as e:
+                print(f'Thumbnail auto-download error: {e}')
+
     def get_absolute_url(self):
         # Simplified to match your project's URL patterns
         return reverse('article_detail', kwargs={'slug': self.slug})
@@ -188,7 +296,7 @@ class Article(models.Model):
                     if actual_file.startswith(base_name):
                         # Return the path to the actual file found on disk
                         relative_path = os.path.join(os.path.dirname(clean_path), actual_file)
-                        return f"{settings.MEDIA_URL}{relative_path.replace('\\', '/')}"
+                        return f"{settings.MEDIA_URL}{relative_path.replace(chr(92), '/')}"
             
                 # 5. Ultimate Fallback: Point to the original live website
                 return f"https://www.arunmaira.com/media/articles/images/2026/01/{target_file}"
@@ -259,9 +367,54 @@ class Talk(models.Model):
 
         super().save(*args, **kwargs)
 
+        # Auto-download and crop YouTube thumbnail if not already set
+        if hasattr(self, 'external_link') and hasattr(self, 'thumbnail') and self.external_link and not self.thumbnail:
+            try:
+                import re, requests
+                from io import BytesIO
+                from PIL import Image
+                from django.conf import settings
+                import os
+
+                vid_match = re.search(r'(?:v=|youtu\.be/)([a-zA-Z0-9_-]{11})', self.external_link)
+                if vid_match:
+                    vid = vid_match.group(1)
+                    thumb_dir = os.path.join(settings.MEDIA_ROOT, 'talks/thumbnails')
+                    os.makedirs(thumb_dir, exist_ok=True)
+                    thumb_path = f'talks/thumbnails/{vid}.jpg'
+                    full_path = os.path.join(settings.MEDIA_ROOT, thumb_path)
+
+                    if not os.path.exists(full_path):
+                        for quality in ['maxresdefault', 'hqdefault']:
+                            url = f'https://img.youtube.com/vi/{vid}/{quality}.jpg'
+                            r = requests.get(url, timeout=10)
+                            if r.status_code == 200:
+                                img = Image.open(BytesIO(r.content))
+                                w, h = img.size
+                                top = int(h * 0.22)
+                                bottom = int(h * 0.18)
+                                cropped = img.crop((0, top, w, h - bottom))
+                                final = cropped.resize((640, 360), Image.LANCZOS)
+                                final.save(full_path, 'JPEG', quality=90)
+                                break
+
+                    # Use update to avoid recursion
+                    Talk.objects.filter(pk=self.pk).update(thumbnail=thumb_path)
+            except Exception as e:
+                print(f'Thumbnail auto-download error: {e}')
+
     def get_absolute_url(self):
         """Generate URL for listening page anchor"""
         return f"/listening/# {self.slug}"
+
+    @property
+    def video_id(self):
+        import re
+        if self.external_link:
+            match = re.search(r"(?:v=|youtu\.be/)([a-zA-Z0-9_-]{11})", self.external_link)
+            if match:
+                return match.group(1)
+        return None
 
     def has_media(self):
         return bool(self.media_file or self.external_link)
@@ -541,6 +694,42 @@ class SiteSettings(models.Model):
         # Ensure only one SiteSettings instance exists
         self.pk = 1
         super().save(*args, **kwargs)
+
+        # Auto-download and crop YouTube thumbnail if not already set
+        if hasattr(self, 'external_link') and hasattr(self, 'thumbnail') and self.external_link and not self.thumbnail:
+            try:
+                import re, requests
+                from io import BytesIO
+                from PIL import Image
+                from django.conf import settings
+                import os
+
+                vid_match = re.search(r'(?:v=|youtu\.be/)([a-zA-Z0-9_-]{11})', self.external_link)
+                if vid_match:
+                    vid = vid_match.group(1)
+                    thumb_dir = os.path.join(settings.MEDIA_ROOT, 'talks/thumbnails')
+                    os.makedirs(thumb_dir, exist_ok=True)
+                    thumb_path = f'talks/thumbnails/{vid}.jpg'
+                    full_path = os.path.join(settings.MEDIA_ROOT, thumb_path)
+
+                    if not os.path.exists(full_path):
+                        for quality in ['maxresdefault', 'hqdefault']:
+                            url = f'https://img.youtube.com/vi/{vid}/{quality}.jpg'
+                            r = requests.get(url, timeout=10)
+                            if r.status_code == 200:
+                                img = Image.open(BytesIO(r.content))
+                                w, h = img.size
+                                top = int(h * 0.22)
+                                bottom = int(h * 0.18)
+                                cropped = img.crop((0, top, w, h - bottom))
+                                final = cropped.resize((640, 360), Image.LANCZOS)
+                                final.save(full_path, 'JPEG', quality=90)
+                                break
+
+                    # Use update to avoid recursion
+                    Talk.objects.filter(pk=self.pk).update(thumbnail=thumb_path)
+            except Exception as e:
+                print(f'Thumbnail auto-download error: {e}')
     
     @classmethod
     def load(cls):

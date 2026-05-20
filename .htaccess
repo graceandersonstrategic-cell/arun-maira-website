@@ -1,0 +1,16 @@
+# DO NOT EDIT. Added by the Python Selector
+PassengerAppRoot "/home/arungkci/arun_maira_site"
+PassengerBaseURI "/"
+PassengerPython "/home/arungkci/virtualenv/arun_maira_site/3.11/bin/python"
+# END SNIPPET
+
+# Serve media files directly without going through Django
+RewriteEngine On
+RewriteCond %{REQUEST_URI} ^/media/
+RewriteCond %{DOCUMENT_ROOT}/../arun_maira_site/media%{PATH_INFO} -f
+RewriteRule ^/media/(.*)$ - [L]
+
+Alias /media/ /home/arungkci/arun_maira_site/media/
+
+# Allow external images
+Header set Content-Security-Policy "img-src * data: blob:;"
